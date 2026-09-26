@@ -1,0 +1,20 @@
+﻿@using System.Text.Json.Nodes;
+
+<div class="card-body p-0">
+    @{
+        JsonNode pageConfig = JsonNode.Parse(System.IO.File.ReadAllText("wwwroot/data/pagesLayout.json"))[ViewData["title"].ToString()];
+        string tableStyle = (pageConfig["Table-style"] != null ? pageConfig["Table-style"].ToString() : "");
+    }
+    <div class="table-responsive @tableStyle" style="min-height:500px">
+        <table class="table table-custom @(tableStyle.Length == 0 ? "table-fixe" : "")" id="campagneList">
+            <thead>
+                <tr id="mainTable">
+                    <partial name="_tableHeadersPartial" />
+                </tr>
+            </thead>
+            <tbody id="mainTableBody">
+                <partial name="_tableRowsPartial" />
+            </tbody>
+        </table>
+    </div>
+</div>

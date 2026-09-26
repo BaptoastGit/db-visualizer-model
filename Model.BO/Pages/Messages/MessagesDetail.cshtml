@@ -1,0 +1,82 @@
+﻿@page
+@model Model.BO.Pages.Messages.MessagesModel
+@{
+    ViewData["Title"] = $"User n°";
+}
+
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <script src="~/assets/js/page-functions/transaction-detail.js"></script>
+
+
+</head>
+
+<body>
+    <navigation-menu/>
+
+    <main-header/>
+ 
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <main class="nxl-container d-flex flex-column justify-content-between background-image">
+        <div class="nxl-content bg-transparent d-flex flex-column flex-grow-1">
+            <!-- [ page-header ] start -->
+            <sub-page-header/>
+            <!-- [ page-header ] end -->
+            <!-- [ Main Content ] start -->
+            <div class="main-content  flex-grow-1" style="height:100%; display:block; overflow-x:auto;">
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <div class="card stretch stretch-full ">
+                            <div class="table-responsive">
+                                <table class="table table-custom table-fixe" id="campagneList">
+                                    <thead>
+                                        <tr id="mainTable">
+                                            <th class="resizable-th" id="th-DataType">
+                                                <div class="th-wrapper">
+                                                    <div class="cellule-reduite" id="DataType">Variable</div>
+                                                </div>
+                                            </th>
+                                            <th class="resizable-th" id="th-Value">
+                                                <div class="th-wrapper">
+                                                    <div class="cellule-reduite" id="Value">Valeur</div>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="mainTableBody">
+
+                                       @*  @foreach (var attribut in Model.transactionInfo.GetType().GetProperties())
+                                            {
+                                                <tr>
+                                                    <td class="donnees">@attribut.Name</td>
+                                                    <td class="donnees"  title="@attribut.GetValue(Model.transactionInfo)">@attribut.GetValue(Model.transactionInfo)</td>
+                                                </tr>
+                                            } *@
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form method="post" id="form">
+            </form>
+            <!-- [ Main Content ] end -->
+        </div>
+
+        <main-footer />
+
+    </main>
+    <!--! ================================================================ !-->
+    <!--! [End] Main Content !-->
+    <!--! ================================================================ !-->
+    
+</body>
+
+</html>

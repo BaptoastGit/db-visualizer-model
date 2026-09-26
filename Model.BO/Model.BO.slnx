@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../Model.BO.Data/Model.BO.Data.csproj" />
+  <Project Path="../Model.BO.Service/Model.BO.Service.csproj" />
+  <Project Path="Model.BO.csproj" />
+</Solution>

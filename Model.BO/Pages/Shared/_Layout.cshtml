@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Baptiste Gallissian" />
+    <title>@ViewData["Title"] - BackOffice</title>
+    <link rel="icon" href="https://img.icons8.com/?size=100&id=Md3k8zGyt289&format=png&color=000000">
+    <!--! BEGIN: Bootstrap CSS-->
+    <link rel="stylesheet" type="text/css" href="~/assets/css/bootstrap.min.css" />
+    <!--! END: Bootstrap CSS-->
+    <!--! BEGIN: Vendors CSS-->
+    <link rel="stylesheet" type="text/css" href="~/assets/vendors/css/vendors.min.css" />
+    <!--! END: Vendors CSS-->
+    <!--! BEGIN: Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="~/assets/css/theme.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/assets/css/custom-styles.css" />
+    <link rel="stylesheet" type="text/css" href="~/assets/css/dark-theme.css" />
+    <!--! END: Custom CSS-->
+    <!--! BEGIN: Custom Components JS-->
+    <script src="~/assets/js/components/navbar.js"></script>
+    <script src="~/assets/js/components/main-header.js"></script>
+    <script src="~/assets/js/components/page-header.js"></script>
+    <script src="~/assets/js/components/main-footer.js"></script>
+    <script src="~/assets/js/shared/table-reload.js"></script>
+
+    <!--! END: Custom Components JS-->
+
+</head>
+<body data-page-title="@ViewData["Title"]" data-page-user="@User.Identity.Name">
+    <script>
+        window.appRoot = '@Url.Content("~/")';
+        const savedTheme = sessionStorage.getItem('theme') || 'light';
+        console.log(savedTheme)
+        document.documentElement.setAttribute('data-bs-theme', savedTheme);
+    </script>
+
+    <div>
+        <main role="main" class="pb-3">
+            @RenderBody()
+            <script>
+                const sortOrder = JSON.parse(sessionStorage.getItem('sortOrder' +   '@ViewData["Title"]'));
+                console.log(sortOrder);
+                if (sortOrder) {
+                    for (const [key, value] of Object.entries(sortOrder)) {
+                        document.getElementById(key).innerHTML = `${ key } ${ value === '1' ? '⏶' : (value === '0' ? '⏷' : '') }`;
+                    }
+                }
+                addSidebarTogglersListeners();
+            </script>
+        </main>
+    </div>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+﻿@using System.Collections
+@using System.Text.Json.Nodes;
+@using Microsoft.AspNetCore.Authorization
+
+
+@{
+    JsonNode pageConfig = JsonNode.Parse(System.IO.File.ReadAllText("wwwroot/data/pagesLayout.json"))[ViewData["title"].ToString()];
+    int row = 0;
+
+}
+@if (Model.dataList != null && Model.dataList.Count > 0)
+{
+    JsonNode tablesColumns = pageConfig["Colonnes Tables"];
+    @foreach (var item in Model.dataList)
+    {
+        row++;
+        <tr class="table-rows">
+
+            @if (pageConfig["Header Actions"] != null)
+            {
+                <td class="d-flex justify-content-center  fs-4">
+                    <div class="checkbox-wrapper-28 row-checkbox">
+                        <input id="tmp-@row" type="checkbox" class="promoted-input-checkbox" />
+                        <svg><use xlink:href="#checkmark-28" /></svg>
+                        <label row="@row" onclick="checkRowBox('tmp-' + @row)" class="checkbox-labels">
+
+                        </label>
+                        <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+                            <symbol id="checkmark-28" viewBox="0 0 20 20">
+                                <path stroke-linecap="round" stroke-miterlimit="10" fill="none" d="M22.9 3.7l-15.2 16.6-6.6-7.1">
+                                </path>
+                            </symbol>
+                        </svg>
+                    </div>
+
+                </td>
+            }
+
+            @foreach (var column in (JsonObject)tablesColumns)
+            {
+                JsonNode jsonValues = column.Value.AsObject();
+                var property = item.GetType().GetProperty(jsonValues["DBColumn"].ToString());
+                var propertyType = property?.PropertyType;
+                bool visibleOnMobile = pageConfig["VisibleColumnsOnMobile"].ToString().Contains(jsonValues["DBColumn"].ToString());
+
+
+                @if ((propertyType == typeof(DateTime?) || propertyType == typeof(DateTime)) && pageConfig["EditableColumns"] == null)
+                {
+                    <td title="@property?.GetValue(item, null)?.ToString()" class="cellule-reduite donnees donneesCampagne m-lg-5 @jsonValues["DBColumn"] @( visibleOnMobile ? "" :  "d-none d-lg-table-cell ")  @(jsonValues["HideMinutesOnLargeScreens"] == null ? "d-xxl-none " : "") ">@property?.GetValue(item, null)?.ToString().Remove(10)</td>
+                    @if (jsonValues["HideMinutesOnLargeScreens"] == null)
+                    {
+                        <td title="@property?.GetValue(item, null)?.ToString()" class="cellule-reduite donnees donneesCampagne m-lg-5  @jsonValues["DBColumn"] d-none  d-xxl-table-cell">@property?.GetValue(item, null)</td>
+                    }
+                }
+                else if (jsonValues["Link"] != null &&  jsonValues["Link"].ToString() == "Itself")
+                {
+                    <td style="text-align:center" class="donnees">
+                        <a title="@property?.GetValue(item, null)" class="@jsonValues["DBColumn"]" href='@property?.GetValue(item, null)'>@property?.GetValue(item, null)</a>
+                    </td>
+                }
+                else if (jsonValues["Link"] != null && property?.GetValue(item, null) > 0)
+                {
+                   
+                        string linkParameters = "";
+                        JsonNode parameters = jsonValues["Link"]["Parameters"];
+                        @foreach (var parameter in (JsonObject)parameters)
+                        {
+                            var parameterProperty = item.GetType().GetProperty(parameter.Value.ToString());
+
+                            linkParameters += "&" + parameter.Key + "=" + (@parameterProperty?.GetValue(item, null) ?? parameter.Value);
+                        }
+                        linkParameters = linkParameters.Substring(1);
+                        <td style="text-align:center">
+                            <a title="@column.Key" class="@jsonValues["DBColumn"]" href='@Url.Content(jsonValues["Link"]["Href"] + "?" + linkParameters)'>@property?.GetValue(item, null)</a>
+                        </td>
+                    
+                    
+                }
+                
+                else if (pageConfig["EditableColumns"] != null && pageConfig["EditableColumns"].ToString().Contains(jsonValues["DBColumn"].ToString()))
+                {
+                    <td title="@property?.GetValue(item, null)" class="cellule-reduite donnees donneesCampagne position-relative m-lg-5 @jsonValues["DBColumn"] @(visibleOnMobile ? "" :  "d-none d-lg-table-cell" )"><span>@property?.GetValue(item, null)</span>
+                        @if (propertyType == typeof(DateTime?) || propertyType == typeof(DateTime))
+                        {
+                            <i class="bi-pencil edit-pencil ms-2 invisible">
+                                <input class="picker-anchor" type="datetime-local" onchange="addEditDateToForm()" />
+                            </i>
+
+                            
+                        }
+                        else
+                        {
+                            <input class="form-control-sm d-none" value="@property?.GetValue(item, null)" style="width: 150px;" onchange="addEditToForm()" />
+
+                            <i class="bi-pencil edit-pencil ms-2 invisible"></i>
+                        }
+                    </td>
+                }
+                else if (propertyType == typeof(List<string>))
+                {
+                    if (@property?.GetValue(item, null) != null)
+                    {
+                        <td class="donnees">
+                            @foreach (string val in @property?.GetValue(item, null))
+                            {
+                                <span>@val</span> <br/>
+                            }
+                        </td>
+                    }
+                    
+                }
+                else
+                {
+                    <td title="@property?.GetValue(item, null)"  class="cellule-reduite donnees donneesCampagne m-lg-5 @jsonValues["DBColumn"] @(visibleOnMobile ? "" : "d-none d-lg-table-cell")">@property?.GetValue(item, null)?.ToString()</td>
+                }
+            }
+            @if (pageConfig["Colonne Actions"] != null)
+            {
+               <td >
+                    <div class="d-flex justify-content-center ps-3 gap-1">
+                        @{
+                            JsonNode actionButtons = pageConfig["Colonne Actions"]["Buttons"];
+                        }
+                        @foreach (var button in (JsonObject)actionButtons)
+                        {
+                            JsonNode buttonValues = button.Value.AsObject();
+                            @if ((await AuthorizationService.AuthorizeAsync(User, "Require" + buttonValues["StatusRequired"])).Succeeded)
+                            {
+                                string linkParameters = "";
+                                JsonNode parameters = buttonValues["Link"]["Parameters"];
+                                @foreach (var parameter in (JsonObject)parameters)
+                                {
+                                    var property = item.GetType().GetProperty(parameter.Value.ToString());
+
+                                    linkParameters += "&" + parameter.Key + "=" + (@property?.GetValue(item, null) ?? parameter.Value);
+                                }
+                                linkParameters = linkParameters.Substring(1);
+                            <a title="@button.Key" class="btn btn-primary btn-sm" href='@Url.Content(buttonValues["Link"]["Href"] + "?" + linkParameters)'>  <i class="@buttonValues["Icon"] link-icon"></i> </a>
+                            }
+                        }
+                   </div> 
+                </td>
+            }
+        </tr>
+    }
+}
+else
+{
+    <tr>
+        <td class="fs-5 d-lg-none" colspan="4" style="text-align: center;">@pageConfig["Default message"]</td>
+        @{
+            int columnCount = pageConfig["Colonnes Tables"]?.AsObject().Count() ?? 0;
+            columnCount += (pageConfig["Colonne Actions"] != null ? 1 : 0);
+            columnCount += (pageConfig["Header Actions"] != null ? 1 : 0);
+
+        }
+        <td class="fs-5 d-none d-lg-table-cell" colspan="@columnCount" style="text-align: center;">@pageConfig["Default message"]</td>
+    </tr>
+}
+@{
+    ViewContext.HttpContext.Items["rowCount"] = row;
+}

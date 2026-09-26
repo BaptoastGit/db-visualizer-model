@@ -1,0 +1,254 @@
+{
+  "Accounts": {
+    "Colonnes Tables": {
+      "Id": {
+        "DBColumn": "Id",
+        "Width": "10"
+      },
+      "Name": {
+        "DBColumn": "Name",
+        "Width": "8"
+      },
+      "Type": {
+        "DBColumn": "Type",
+        "Width": "8"
+      },
+      "Status": {
+        "DBColumn": "Status",
+        "Width": "8",
+        "Type": "Fixed Values",
+        "ValuesList": "Status",
+        "SelectAllOptionsLabel": "Any"
+      },
+      "Tier": {
+        "DBColumn": "Tier",
+        "Width": "8"
+      },
+      "Balance": {
+        "DBColumn": "Balance",
+        "Width": "8",
+        "Type": "Number"
+      },
+      "Is Vat Exempt": {
+        "DBColumn": "IsVatExempt",
+        "Width": "12",
+        "Type": "Fixed Values",
+        "ValuesList": "Bool",
+        "SelectAllOptionsLabel": "Select all"
+      },
+      "Created On": {
+        "DBColumn": "CreatedOn",
+        "Width": "12",
+        "Type": "DateTime"
+      }
+    },
+    "Header Actions": {
+      "Send verification link": {
+        "Icon": "bi-upload",
+        "Function": "SendSelectedFileNames('VerificationLink')"
+      },
+      "Add account to log": {
+        "Icon": "bi-arrow-repeat",
+        "Function": "SendSelectedFileNames('Log')"
+      }
+    },
+    "VisibleColumnsOnMobile": [ "Id", "Name", "Tier" ],
+    "Default message": "No account found."
+  },
+  "Users": {
+    "Colonnes Tables": {
+      "Id": {
+        "DBColumn": "Id"
+      },
+      "Email": {
+        "DBColumn": "Email"
+      },
+      "Username": {
+        "DBColumn": "Username"
+      },
+      "CreatedOn": {
+        "DBColumn": "CreatedOn",
+        "Type": "DateTime"
+      },
+      "FailedLoginAttempts": {
+        "DBColumn": "FailedLoginAttempts",
+        "Type": "Number"
+      },
+      "PhoneNumber": {
+        "DBColumn": "PhoneNumber"
+      },
+      "InternalNotes": {
+        "DBColumn": "InternalNotes"
+      }
+    },
+    "Colonne Actions": {
+      "Buttons": {
+        "User details": {
+          "StatusRequired": "ReaderUsers",
+          "Icon": "bi-eye",
+          "Link": {
+            "Href": "~/UserData/UserDetail",
+            "Parameters": {
+              "Id": "Id"
+            }
+          }
+        }
+      }
+    },
+    "VisibleColumnsOnMobile": [ "Email", "Username", "CreatedOn" ],
+    "EditableColumns": [ "PhoneNumber", "InternalNotes" ],
+    "Default message": "No user found."
+
+  },
+  "Messages": {
+    "Colonnes Tables": {
+      "Number of retries": {
+        "DBColumn": "RetryCount",
+        "Type": "Number"
+      },
+      "ErrorMessage": {
+        "DBColumn": "ErrorMessage"
+      },
+      "Priority": {
+        "DBColumn": "Priority"
+      },
+      "PayloadSize": {
+        "DBColumn": "PayloadSize"
+      },
+      "ProcessedOn": {
+        "DBColumn": "ProcessedOn",
+        "Type": "DateTime"
+      },
+      "CorrelationId": {
+        "DBColumn": "CorrelationId"
+      }
+    },
+    "VisibleColumnsOnMobile": [ "ErrorMessage", "Priority", "PayloadSize" ],
+    "EditableColumns": [ "ProcessedOn", "CorrelationId", "Priority" ],
+    "DeletableRows": true,
+    "Default message": "No message found."
+  },
+  "Orders": {
+    "Colonnes Tables": {
+      "OrderNumber": {
+        "DBColumn": "OrderNumber"
+      },
+      "CustomerEmail": {
+        "DBColumn": "CustomerEmail"
+      },
+      "OrderStatus": {
+        "DBColumn": "OrderStatus"
+      },
+      "PaymentStatus": {
+        "DBColumn": "PaymentStatus"
+      },
+      "TotalAmount": {
+        "DBColumn": "TotalAmount",
+        "Type": "Number"
+      },
+      "Currency": {
+        "DBColumn": "Currency"
+      },
+      "ShippingMethod": {
+        "DBColumn": "ShippingMethod"
+      },
+      "TrackingNumber": {
+        "DBColumn": "TrackingNumber"
+      },
+      "ItemCount": {
+        "DBColumn": "ItemCount",
+        "Type": "Number"
+      },
+      "OrderedOn": {
+        "DBColumn": "OrderedOn",
+        "Type": "DateTime"
+      }
+    },
+    "Colonne Actions": {
+      "Buttons": {
+        "Détails de la commande": {
+          "StatusRequired": "ReaderOrders",
+          "Icon": "bi-eye",
+          "Link": {
+            "Href": "~/RDC/TransactionDetail",
+            "Parameters": {
+              "Id": "OrderNumber"
+            }
+          }
+        },
+        "Edit values": {
+          "StatusRequired": "ReaderOrders",
+          "Icon": "bi-cart",
+          "Link": {
+            "Href": "~/RDC/TransactionDetailProduits",
+            "Parameters": {
+              "Id": "OrderNumber"
+            }
+          }
+        }
+      }
+    },
+    "VisibleColumnsOnMobile": [ "OrderNumber", "OrderStatus", "TotalAmount", "OrderedOn" ],
+    "Default message": "No order found."
+  },
+  "Prices": {
+    "Colonnes Tables": {
+      "Sku": {
+        "DBColumn": "Sku"
+      },
+      "PriceListCode": {
+        "DBColumn": "PriceListCode"
+      },
+      "Amount": {
+        "DBColumn": "Amount",
+          "Type": "Number"
+      },
+      "Currency": {
+        "DBColumn": "Currency"
+      },
+      "ValidFrom": {
+        "DBColumn": "ValidFrom",
+        "Type": "DateTime"
+      },
+      "ValidTo": {
+        "DBColumn": "ValidTo",
+        "Type": "DateTime"
+      }
+    },
+    "VisibleColumnsOnMobile": [ "Sku", "Amount", "ValidTo" ],
+    "Default message": "No order found."
+  },
+  "Products": {
+    "Colonnes Tables": {
+      "Sku": {
+        "DBColumn": "Sku"
+      },
+      "Title": {
+        "DBColumn": "Title"
+      },
+      "Category": {
+        "DBColumn": "Category"
+      },
+      "StockQuantity": {
+        "DBColumn": "StockQuantity",
+        "Type": "Number"
+      },
+      "IsPublished": {
+        "DBColumn": "IsPublished",
+        "Type": "Fixed Values",
+        "ValuesList": "Bool",
+        "SelectAllOptionsLabel": "Tout sélectionner"
+      },
+      "WeightKg": {
+        "DBColumn": "WeightKg",
+        "Type": "Number"
+      },
+      "ModifiedOn": {
+        "DBColumn": "ModifiedOn",
+        "Type": "DateTime"
+      }
+    },
+    "VisibleColumnsOnMobile": [ "Sku", "Category", "WeightKg" ],
+    "Default message": "No order found."
+  }
+}

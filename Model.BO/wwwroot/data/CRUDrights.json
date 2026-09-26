@@ -1,0 +1,36 @@
+{
+  "groups": {
+    "adminGroup": {
+      "Accounts": "admin",
+      "Users": "admin",
+
+      "Messages": "admin",
+
+      "Orders": "admin",
+      "Products": "admin",
+      "Prices": "admin"
+
+    },
+    "editorGroup": {
+      "Accounts": "editor",
+      "Users": "editor",
+
+      "Messages": "editor",
+
+      "Orders": "editor",
+      "Products": "editor",
+      "Prices": "editor"
+
+    },
+    "ReaderGroup": {
+      "Accounts": "reader",
+      "Users": "reader",
+
+      "Messages": "reader",
+
+      "Orders": "reader",
+      "Products": "reader",
+      "Prices": "reader"
+    }
+  }
+}

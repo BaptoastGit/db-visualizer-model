@@ -1,0 +1,121 @@
+﻿@using System.Text.Json.Nodes;
+@using Microsoft.AspNetCore.Authorization
+
+
+@{
+    JsonNode pageConfig = JsonNode.Parse(System.IO.File.ReadAllText("wwwroot/data/pagesLayout.json"))[ViewData["title"].ToString()];
+    JsonNode tablesHeaders = pageConfig["Colonnes Tables"];
+    int row = 0;
+
+}
+<form method="get" id="SortForm">
+
+    <input type="hidden" name="SortBy" id="SortBy" value="@pageConfig["Colonnes Tables"].AsObject().FirstOrDefault().Value["DBColumn"]" />
+    <input type="hidden" name="Order" id="Order" value="1" />
+    <input type="hidden" name="RowCount" id="RowCountForm" value="1000" />
+@if (pageConfig["Header Actions"] != null)
+{
+<th id="th-checked" width="6%" class="resizable-th custom-checkbox">
+        <div class="th-wrapper" >
+            <div class="checkbox-wrapper-28" style="--size: 22px;" >
+                <input id="tmp-a" type="checkbox" class="promoted-input-checkbox" />
+                <svg><use xlink: href="#checkmark-28"/></svg >
+                <label id = "label-tmp-a" onclick="selectAllRows()">
+                </label >
+                <svg xmlns = "http://www.w3.org/2000/svg" style = "display: none" >
+                    <symbol id = "checkmark-28" viewBox = "0 0 24 24" >
+                        <path stroke-linecap="round" stroke-miterlimit = "10" fill = "none"  d = "M22.9 3.7l-15.2 16.6-6.6-7.1" >
+                        </path >
+                    </symbol >
+                </svg >
+            </div>
+        </div>
+</th>
+}
+@foreach (var column in (JsonObject)tablesHeaders)
+{
+    JsonNode jsonValues = column.Value.AsObject();
+        bool visibleOnMobile = pageConfig["VisibleColumnsOnMobile"].ToString().Contains(jsonValues["DBColumn"].ToString());
+        <th class="resizable-th  @(visibleOnMobile ? "" :  "d-none d-lg-table-cell")" id="th-@column.Key" width="@(string.IsNullOrEmpty(jsonValues["Width"]?.ToString()) ? "0" : jsonValues["Width"]?.ToString())">
+            <div class="th-wrapper" style="position:relative">
+                <div class="cellule-reduite header-label" title="@column.Key" id="label-@(jsonValues["DBColumn"])">@column.Key</div>
+                <div style="position:absolute; right: 15px; top:30%">
+                    <div class="filterButton" id="OptionsToggler" type="button" data-bs-toggle="collapse" href="#colonne-@(row)" aria-expanded="false" aria-controls="collapse-@(row)">
+                        <i id="filter-icon-@jsonValues["DBColumn"]" class="feather-filter"></i>
+                    </div>
+                    <div class="collapse firstColumn mt-4" id="colonne-@(row)" style="position:absolute; @(row == 0 && int.Parse(string.IsNullOrEmpty(jsonValues["Width"]?.ToString()) ? "0" : jsonValues["Width"]?.ToString()) < 12 ? " right:-800%" : "right:-100%") ;z-index: 1000;width:200px">
+                        <div class="card card-body  bg-white shadow" style="padding:0;">
+                            <div id="@(jsonValues["DBColumn"])" direction="0" class="sort-row d-flex" style="padding:10px; margin-top: 5px;cursor: pointer;" onclick='SortTable(this,  "@(ViewData["title"].ToString())")'><i class="bi-sort-up mx-2"></i>Sort from A to Z </div>
+                            <div id="@(jsonValues["DBColumn"])" direction="1" class="sort-row d-flex" style="padding:10px; margin-top: 5px;cursor: pointer;" onclick='SortTable(this,  "@(ViewData["title"].ToString())")'><i class="bi-sort-down mx-2"></i> Sort from Z to A </div>
+                            <hr class="divider my-2" />
+                            <span class="m-2">Filter</span>
+
+
+                            @if (jsonValues["Type"]?.ToString() == "DateTime")
+                            {
+                                <span class="ms-2">Supérieur à </span>
+                                <input id="input-start-@(jsonValues["DBColumn"])" class="m-2 userInput date-start @(jsonValues["DefaultStartValue"])" style="font-size: 0.8175rem" Name="@(jsonValues["DBColumn"])" type="datetime-local" />
+                                <span class="ms-2">Inférieur à</span>
+                                <input id="input-end-@(jsonValues["DBColumn"])" class="m-2 userInput date-end @(jsonValues["DefaultEndValue"])" style="font-size: 0.8175rem" Name="@(jsonValues["DBColumn"])" type="datetime-local" />
+                            }
+                            else if (jsonValues["Type"]?.ToString() == "Number")
+                            {
+                                <select class="rounded-3 border-gray-1 p-2 userInput" title="Choose an operator" id="input-operator-@(jsonValues["DBColumn"])" name="@(jsonValues["DBColumn"])" style="font-size: 0.8175rem" value="gt">
+                                    <option value="eq">Equal to</option>
+                                    <option value="gt" selected>More than</option>
+                                    <option value="lt">Less than</option>
+                                </select>
+                                <input type="number" id="input-@(jsonValues["DBColumn"])" style="font-size: 0.8175rem" class="input-sm m-2 userInput" Name="@(jsonValues["DBColumn"])" placeholder="Valeur..." value="0" />
+                            }
+                            else if (jsonValues["Type"]?.ToString() == "Fixed Values")
+                            {
+                                <span class="checkbox-row multiple-inputs" id="checkbox-all-@jsonValues["DBColumn"]" value="0" style="padding:10px; padding-bottom:10px;margin-top: 5px;margin-bottom:5px; cursor: pointer; display: flex; justify-content: space-between;" onclick='selectAllOptions(`@jsonValues["DBColumn"]`)'>
+                                    <span class="text-secondary">
+                                        @jsonValues["SelectAllOptionsLabel"]
+                                    </span>
+                                    <i id="checkbox-item-all-@jsonValues["DBColumn"]" class="ms-3 checkboxitem-all"></i>
+                                </span>
+
+                                JsonNode data = JsonNode.Parse(System.IO.File.ReadAllText("wwwroot/data/data.json"));
+                                JsonNode options = data[jsonValues["ValuesList"].ToString()];
+
+                                foreach (var option in (JsonArray)options)
+                                {
+                                    <div class="checkbox-row" style="padding:10px; padding-bottom:10px;margin-top: 5px;margin-bottom:5px; cursor: pointer; display: flex; justify-content: space-between;" onclick='checkBoxClickHandler(`@(jsonValues["DBColumn"])` ,`@(option["value"])`)'>
+                                        <span class="text-secondary">@option["name"]</span>
+                                        <i optionId="@option["value"]" name="@(jsonValues["DBColumn"])" id="checkbox-item-@option["value"]" class="checkboxitem  @(jsonValues["DBColumn"]) ms-3"></i>
+                                        <input id="checkbox-value-@option["value"]" type="hidden" name="@(jsonValues["DBColumn"])" value="" />
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <input id="input-@(jsonValues["DBColumn"])" class="input-sm m-2 userInput" style="font-size: 0.7075rem" Name="@(jsonValues["DBColumn"])" placeholder="Includes..." />
+
+                            }
+
+                            <button class="btn btn-sm btn-primary m-2">Apply filters</button>
+                            <i id="checkbox-item-100" class=" ms-3"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div onmousedown="getColumnSize(this)" class="resizer"></div>
+            </div>
+        </th>
+        row++;
+}
+    <button type="submit" class="btn btn-primary d-none" id="SearchButton">
+        Rechercher
+    </button>
+</form>
+@if (pageConfig["Colonne Actions"] != null)
+{
+    <th id="th-Actions" width="10%" class="resizable-th">
+        <div class="th-wrapper">
+            <div id="Actions">Actions</div>
+        </div>
+    </th>
+
+
+}

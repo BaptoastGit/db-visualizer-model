@@ -1,0 +1,91 @@
+﻿@using System.Text.Json.Nodes;
+@using Microsoft.AspNetCore.Authorization
+
+
+@{
+    JsonNode pageConfig = JsonNode.Parse(System.IO.File.ReadAllText("wwwroot/data/pagesLayout.json"))[ViewData["title"].ToString()];
+    JsonNode filtersOptions = pageConfig["Filtres Tables"];
+
+}
+
+
+<div class="collapse" id="collapseFilter">
+    <div class="card card-body">
+        <form method="get" id="SortForm">
+
+            <input type="hidden" name="SortBy" id="SortBy" value="@pageConfig["Colonnes Tables"].AsObject().FirstOrDefault().Key" />
+            <input type="hidden" name="Order" id="Order" value="1" />
+            <input type="hidden" name="Success" id="Success" value="" />
+
+
+            <div class="d-lg-flex justify-content-lg-between align-content-lg-center " id="filterContainer">
+
+
+                @foreach (var filterOption in (JsonObject)filtersOptions)
+                {
+                    JsonNode filterOptionValues = filterOption.Value.AsObject();
+
+                    <div class="row align-content-center">
+                        <div class="col-lg-10">
+                            <label for="messageState" class="fw-semibold">@filterOption.Key : </label>
+                        </div>
+                        @switch (filterOptionValues["Type"].ToString())
+                        {
+                            case "select":
+                                <div class="col-lg-12">
+                                    <div class=" mb-3 mb-lg-0">
+                                        <button id="OptionsToggler" type="button" class="btn  btn-light-brand" title="@filterOptionValues["Name"]" data-bs-toggle="collapse" href="#collapseStateOptions" role="button" aria-expanded="false" aria-controls="collapseStateOptions" style="position: relative; width:200px">
+                                            <span>@filterOptionValues["DefaultValue"] ⏷</span>
+                                        </button>
+                                        <div class="collapse" id="collapseStateOptions" style="position:absolute; z-index: 1000;width:200px">
+                                            <div class="card card-body userInput bg-white shadow" id="OptionsContainer" value="@filterOptionValues["Name"]" style="padding:0;">
+                                                <span class="checkbox-row" id="checkbox-100" name="${dict[key].Name}" value="0" style="padding:10px; padding-bottom:15px;margin-top: 5px;margin-bottom:5px; cursor: pointer; display: flex; justify-content: space-between;">
+                                                    <span>
+                                                        @filterOptionValues["DefaultValue"]
+                                                    </span>
+                                                    <i id="checkbox-item-100" class=" ms-3"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                break;
+
+                            case "date-range":
+
+                                <div>
+                                    <div class="mb-3 mb-lg-0" style="display: flex; align-items: center;gap:1%">
+                                        <span>Du</span>
+                                        <input class="form-control-sm col-5 userInput @filterOptionValues["DefaultValueStart"]" id="StartDate" monthsBefore="@filterOptionValues["NumberOfMonthsAgo"]" type="datetime-local" title="StartDate" name="StartDate">
+                                        <span>au</span>
+                                        <input class="form-control-sm col-5 userInput @filterOptionValues["DefaultValueEnd"]" id="EndDate" type="datetime-local" title="EndDate" name="EndDate">
+                                    </div>
+                                </div>
+                                break;
+
+                            case "input":
+                                <div class= "col-lg-10" >
+                                    <input class= "form-control-sm mb-3 mb-lg-0 userInput empty" title = "@filterOption.Key" id = "@filterOptionValues["Name"]" name = "@filterOptionValues["Name"]" />
+                                </div>
+
+                                break;
+
+                            default:
+                                break;
+                        }
+                    </div>
+
+                }
+                <div class="d-flex align-items-center justify-content-center">
+                    <button type="submit" class="btn btn-primary" id="SearchButton">
+                        <i class="feather-search me-2"></i>
+                        <span> Rechercher </span>
+                    </button>
+                </div>
+
+
+            </div>
+         </form>
+    </div>
+</div>

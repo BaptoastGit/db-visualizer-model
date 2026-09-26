@@ -1,0 +1,61 @@
+﻿@page
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
+@model Model.BO.Pages.Messages.MessagesModel
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+@{
+    ViewData["Title"] = "Messages";
+}
+
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <!--! BEGIN: Custom scripts JS-->
+    <script src="~/assets/js/components/filter-menu.js"></script>
+    <script src="~/assets/js/components/table-header.js"></script>
+    <script src="~/assets/js/page-functions/commande.js"></script>
+    <script src="~/assets/js/shared/table-column-resizing.js"></script>
+    <script src="~/assets/js/shared/sort.js"></script>
+    <script src="~/assets/js/shared/table-reload.js"></script>
+
+    <script src="~/assets/js/components/custom-select.js"></script>
+    <!--! END: Custom scripts JS-->
+</head>
+
+<body>
+
+    <navigation-menu />
+
+    <main-header />
+
+    <main class="nxl-container d-flex flex-column justify-content-between background-image">
+        <div class="nxl-content bg-transparent d-flex flex-column flex-grow-1">
+            <!-- [ page-header ] start -->
+            <page-header />
+            <!-- [ page-header ] end -->
+            <!-- [ Main Content ] start -->
+            <div class="main-content  flex-grow-1" style="height:100%; display:block; overflow-x:auto;">
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <div class="card stretch stretch-full ">
+                            <partial name="_tablePartial" />
+
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-0">
+                        <span id="rowCounter">Affichage de @ViewContext.HttpContext.Items["rowCount"] résultat@(ViewContext.HttpContext.Items["rowCount"].ToString() != "1" ? "s" : "")</span>
+                    </div>
+                </div>
+            </div>
+            <form method="post" id="form">
+            </form>
+            <!-- [ Main Content ] end -->
+        </div>
+
+        <main-footer />
+
+    </main>
+</body>
+</html>

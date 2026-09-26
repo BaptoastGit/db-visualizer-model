@@ -1,0 +1,99 @@
+{
+  "EtatMessage": [
+    {
+      "id": "0",
+      "value": "Not_processed",
+      "name": "Not_processed"
+    },
+    {
+      "id": "1",
+      "value": "Processed",
+      "name": "Processed"
+    },
+    {
+      "id": "2",
+      "value": "Error",
+      "name": "Error"
+    }
+  ],
+  "Status": [
+    {
+      "id": "0",
+      "value": "Pending",
+      "name": "Pending"
+    },
+    {
+      "id": "1",
+      "value": "Suspended",
+      "name": "Suspended"
+    },
+    {
+      "id": "2",
+      "value": "Inactive",
+      "name": "Inactive"
+    }
+  ],
+  "Bool": [
+    {
+      "id": "1",
+      "name": "Vrai",
+      "value": "True"
+    },
+    {
+      "id": "2",
+      "name": "Faux",
+      "value": "False"
+    },
+    {
+      "id": "3",
+      "name": "Nul",
+      "value": "Null"
+    }
+  ],
+  "Civilite": [
+    {
+      "id": "1",
+      "name": "Monsieur",
+      "value": "M."
+    },
+    {
+      "id": "2",
+      "name": "Madame",
+      "value": "Mme"
+    },
+    {
+      "id": "3",
+      "name": "Autre",
+      "value": "null"
+    }
+  ],
+  "ExtrwdRewardsStatus": [
+    {
+      "id": "1",
+      "name": "Rewards",
+      "value": "Rewards"
+    },
+    {
+      "id": "2",
+      "name": "Club",
+      "value": "Club"
+    }
+  ],
+  "BookingStatus": [
+    {
+      "id": "1",
+      "name": "Booked",
+      "value": "Booked"
+    },
+    {
+      "id": "2",
+      "name": "Cancelled",
+      "value": "Cancelled"
+    },
+    {
+      "id": "3",
+      "name": "Check In",
+      "value": "Check In"
+    }
+  ]
+}

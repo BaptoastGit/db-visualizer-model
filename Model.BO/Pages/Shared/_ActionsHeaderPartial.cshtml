@@ -1,0 +1,27 @@
+﻿@using System.Text.Json.Nodes;
+
+@{
+    JsonNode pageConfig = JsonNode.Parse(System.IO.File.ReadAllText("wwwroot/data/pagesLayout.json"))[ViewData["title"].ToString()];
+    JsonNode headerActions = pageConfig["Header Actions"];
+}
+
+@if(headerActions != null){
+    <div class="collapse" id="collapseActions">
+        <div class="card card-body d-lg-flex justify-content-lg-start align-content-lg-center p-0" id="ActionsContainer">
+            <div class="d-lg-flex justify-content-lg-start align-content-lg-center p-0">
+                  @foreach(var headerAction in (JsonObject)headerActions)
+                    {
+                        JsonNode actionHeaderValues = headerAction.Value.AsObject();
+
+                    <div class="actionButton p-3 w-100 w-lg-15" onclick='@actionHeaderValues["Function"]'>
+                        <i class="@actionHeaderValues["Icon"] me-1"></i>
+                        <span id="@headerAction.Key" class="text-secondary">@headerAction.Key</span>
+                    </div>
+                    }
+            
+           
+        </div>
+
+    </div>
+</div>
+}
