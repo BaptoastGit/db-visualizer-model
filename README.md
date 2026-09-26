@@ -1,6 +1,6 @@
 # Introduction 
-Model.BO is a web application framework to visualize and apply modifications to a database. Made at the start for a company with custom features, it has been built to be integrated as an intern solution for business purposes.
-I had the oportunity to adapt it and create a model that can be used in a variaty of projects involving a db. 
+Model.BO is a web application framework to visualize and apply modifications to a database. Made at the start for a company with custom features, it has been built to be integrated as an internal solution for business purposes.
+I had the opportunity to adapt it and create a model that can be used in a variety of projects involving a db. 
 
 ![MainScreen](mainScreen.png)
 
@@ -15,7 +15,7 @@ Login is made through Windows Authentication, and therefore doesn't need account
   "groups": {
     "adminGroup": {
       "Accounts": "admin",
-      "Users": "admin"
+      "Users": "admin",
       "Messages": "admin",
       "Orders": "admin",
       "Products": "admin",
@@ -27,7 +27,7 @@ Login is made through Windows Authentication, and therefore doesn't need account
       "Messages": "editor",
       ...
 ```
-An authentication test can be added easily to prevent certains buttons from being added to the page before being sent to the client.
+Authorization checks can be easily implemented in Razor views to prevent certain elements from rendering before being sent to the client:
 ```
 <h1> Title </h1>
 if ((await AuthorizationService.AuthorizeAsync(User, "RequireAdminAccounts")).Succeeded)
@@ -40,7 +40,7 @@ if ((await AuthorizationService.AuthorizeAsync(User, "RequireAdminAccounts")).Su
 
 ### Advanced Filtering
 
-Tables can be ordered and filtered easily, with differents filters depending on the data type. Custom options can also be added in the data.json file: 
+Tables can be ordered and filtered effortlessly, with differents filters depending on the data type. Custom options can also be added in the data.json file: 
 
 <img src="customFiltering.png" width="250" />
 
@@ -97,7 +97,7 @@ Tables can be configured in the pagesLayout.json file to display and modify colu
 git clone https://github.com/BaptoastGit/db-visualizer-model.git
 ```
 2. Open Visual Studio
-3. Press the Play button or run this command in CLI:
+3. Press the Play button or run this command in your terminal:
 ```
 dotnet run
 ```
