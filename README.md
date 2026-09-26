@@ -104,5 +104,54 @@ dotnet run
 
 (The SQLite database will be automatically created and seeded with demo data on the first launch).
 
+## Enable Authentication
+
+1. Disable Authentication bypass in the appsettings.Development.json : 
+```json
+  "BypassAccessRights": false
+```
+2. Add custom users or groups to the CRUDrights.json file:
+```json
+"<MACHINE_NAME>\\<USERNAME>": {
+  "Accounts": "admin",
+  "Users": "admin",
+  "Messages": "admin",
+  "Orders": "admin",
+  "Products": "admin",
+  "Prices": "admin"
+}
+```
+Your username can be found at the top-right corner of any page.
+
+## Link your db
+
+### To switch from SQLite to SQL Server:
+
+1. Add your connection string to the appsettings.Development.json file:
+
+```json
+  "ConnectionStrings": {
+    "TestConnectionString": "Server=localhost,1433;Database=DemoDb;User Id=sa;Password=DemoPassword123!;TrustServerCertificate=True;"
+  }
+```
+2. Remove the demo sqlLite db and Uncomment the SqlServer service in the Program.cs file:
+```csharp
+builder.Services.AddDbContext<ModelDbContext>(options =>
+    options.UseSqlite("Data Source=demo.db"));
+
+//builder.Services.AddDbContext<ModelDbContext>((serviceProvider, options) =>
+//{
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("TestConnectionString"));
+//});
+```
+3. Remove the data generated for the demo in the Program.cs file:
+```csharp
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ModelDbContext>();
+    // DemoDb.GenerateFakeDb(context);
+}
+```
+
 
 

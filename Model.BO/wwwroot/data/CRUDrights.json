@@ -1,5 +1,13 @@
 {
   "groups": {
+    "BAPTOAST_ORDI\\bapto": {
+      "Accounts": "admin",
+      "Users": "admin",
+      "Messages": "admin",
+      "Orders": "admin",
+      "Products": "admin",
+      "Prices": "admin"
+    },
     "adminGroup": {
       "Accounts": "admin",
       "Users": "admin",
@@ -9,7 +17,6 @@
       "Orders": "admin",
       "Products": "admin",
       "Prices": "admin"
-
     },
     "editorGroup": {
       "Accounts": "editor",
