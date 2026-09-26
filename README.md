@@ -42,8 +42,7 @@ if ((await AuthorizationService.AuthorizeAsync(User, "RequireAdminAccounts")).Su
 
 Tables can be ordered and filtered easily, with differents filters depending on the data type. Custom options can also be added in the data.json file: 
 
-![CustomFiltering](customFiltering.png){width=250}
-
+<img src="customFiltering.png" width="250" />
 
 ### Easily Configurable
 
