@@ -10,6 +10,7 @@
 }
 <form method="get" id="SortForm">
 
+    <input type="hidden" name="TableName" id="PageName" value="@(ViewData["title"].ToString())" />
     <input type="hidden" name="SortBy" id="SortBy" value="@pageConfig["Colonnes Tables"].AsObject().FirstOrDefault().Value["DBColumn"]" />
     <input type="hidden" name="Order" id="Order" value="1" />
     <input type="hidden" name="RowCount" id="RowCountForm" value="1000" />

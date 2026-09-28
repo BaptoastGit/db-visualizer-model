@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Model.BO.Data.Model;
+using Model.BO.Pages.UserData;
 using Model.BO.Service;
+using System.Text.Json.Nodes;
 
 
 namespace Model.BO.Pages.Orders
@@ -12,21 +14,35 @@ namespace Model.BO.Pages.Orders
     public class OrdersModel(ModelDbContext context, IAuthorizationService authorizationService) : PageModel
     {
 
-        public List<Order> dataList = [];
+        public List<dynamic> dataList = [];
         public string successMessage;
         public Dictionary<string, string> successMessageList = [];
 
 
-        public async Task<IActionResult> OnGetAsync(string sortBy, string Order, string RowCount = "", string OrderNumber = "", string CustomerEmail = "", string OrderStatus = "", string PaymentStatus = "", List<string> TotalAmount = null, string Currency = "", string ShippingMethod = "", string TrackingNumber = "", List<string> ItemCount = null, List<string> OrderedOn = null)
+        public async Task<IActionResult> OnGetAsync(string TableName = "Orders")
         {
-            var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireReaderOrders").Result;
 
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, "RequireReaderOrders");
 
             if (authorizationResult.Succeeded)
             {
+                var jsonPayload = new JsonObject();
+                foreach (var key in Request.Query.Keys)
+                {
+                    if (key != "handler" && key != "__RequestVerificationToken")
+                    {
+                        Console.WriteLine("Key: " + key + " Value: " + Request.Query[key]);
+                        jsonPayload[key] += Request.Query[key];
+                    }
+                }
+                bool hasTableName = jsonPayload.ContainsKey("TableName") && !string.IsNullOrEmpty(jsonPayload["TableName"]?.ToString());
+                if (!hasTableName)
+                {
+                    jsonPayload["TableName"] = TableName;
+                }
                 try
                 {
-                dataList = OrdersService.SortAndFilterOrdersTable(context, sortBy, Order, RowCount, OrderNumber, CustomerEmail, OrderStatus, PaymentStatus, TotalAmount, Currency, ShippingMethod, TrackingNumber, ItemCount, OrderedOn);
+                    dataList = TableDataService.SortAndFilterTable(context, jsonPayload);
                 }
                 catch (Exception ex)
                 {
@@ -40,16 +56,25 @@ namespace Model.BO.Pages.Orders
             }
         }
 
-        public  IActionResult OnGetTableData(string sortBy, string Order, string RowCount = "", string OrderNumber = "", string CustomerEmail = "", string OrderStatus = "", string PaymentStatus = "", List<string> TotalAmount = null, string Currency = "", string ShippingMethod = "", string TrackingNumber = "", List<string> ItemCount = null, List<string> OrderedOn = null)
+        public IActionResult OnGetTableData()
         {
-            var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireReaderOrders").Result;
 
+            var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireReaderOrders").Result;
 
             if (authorizationResult.Succeeded)
             {
+                var jsonPayload = new JsonObject();
+                foreach (var key in Request.Query.Keys)
+                {
+                    if (key != "handler" && key != "__RequestVerificationToken")
+                    {
+                        Console.WriteLine("Key: " + key + " Value: " + Request.Query[key]);
+                        jsonPayload[key] += Request.Query[key];
+                    }
+                }
                 try
                 {
-                    dataList = OrdersService.SortAndFilterOrdersTable(context, sortBy, Order, RowCount, OrderNumber, CustomerEmail, OrderStatus, PaymentStatus, TotalAmount, Currency, ShippingMethod, TrackingNumber, ItemCount, OrderedOn);
+                    dataList = TableDataService.SortAndFilterTable(context, jsonPayload);
                 }
                 catch (Exception ex)
                 {
@@ -118,8 +143,8 @@ namespace Model.BO.Pages.Orders
         //        }
         //        context.SaveChanges();
         //        return new OkResult();
-            
-            
+
+
         //    }
         //    else
         //    {

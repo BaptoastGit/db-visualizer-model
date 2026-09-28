@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Model.BO.Data.Model;
 using Model.BO.Service;
 using System.Security.Claims;
+using System.Text.Json.Nodes;
 
 
 namespace Model.BO.Pages.UserData
@@ -14,7 +15,7 @@ namespace Model.BO.Pages.UserData
     public class AccountsModel(ModelDbContext context, IAuthorizationService authorizationService, IConfiguration configuration) : PageModel
     {
         private readonly IConfiguration _configuration = configuration;
-        public List<Account> dataList = [];
+        public List<dynamic> dataList = [];
         public string successMessage;
         public string errorMessage;
         public Dictionary<string, string> successMessageList = new()
@@ -28,21 +29,30 @@ namespace Model.BO.Pages.UserData
         };
 
 
-
-
-
-        public async Task<IActionResult> OnGetAsync(string sortBy, string Order, string RowCount = "", string Id = "", string Name = "", string Type = "", string Status = "", string Tier = "", List<string> Balance = null, List<string> IsVatExempt = null, List<string> CreatedOn = null)
+        public async Task<IActionResult> OnGetAsync(string TableName = "Accounts")
         {
-            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
-            Console.WriteLine(string.Join(",", roles));
 
             var authorizationResult = await authorizationService.AuthorizeAsync(User, "RequireReaderAccounts");
 
             if (authorizationResult.Succeeded)
             {
+                var jsonPayload = new JsonObject();
+                foreach (var key in Request.Query.Keys)
+                {
+                    if (key != "handler" && key != "__RequestVerificationToken")
+                    {
+                        Console.WriteLine("Key: " + key + " Value: " + Request.Query[key]);
+                        jsonPayload[key] += Request.Query[key];
+                    }
+                }
+                bool hasTableName = jsonPayload.ContainsKey("TableName") && !string.IsNullOrEmpty(jsonPayload["TableName"]?.ToString());
+                if (!hasTableName)
+                {
+                    jsonPayload["TableName"] = TableName;
+                }
                 try
                 {
-                dataList = UsersDataService.SortAndFilterAccountsTable(context, sortBy, Order, RowCount, Id, Name, Type, Status, Tier, Balance, IsVatExempt, CreatedOn);
+                    dataList = TableDataService.SortAndFilterTable(context, jsonPayload);
                 }
                 catch (Exception ex)
                 {
@@ -56,16 +66,25 @@ namespace Model.BO.Pages.UserData
             }
         }
 
-        public IActionResult OnGetTableData(string sortBy, string Order, string RowCount = "", string Id = "", string Name = "", string Type = "", string Status = "", string Tier = "", List<string> Balance = null, List<string> IsVatExempt = null, List<string> CreatedOn = null)
+        public IActionResult OnGetTableData()
         {
 
             var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireReaderAccounts").Result;
 
             if (authorizationResult.Succeeded)
             {
+                var jsonPayload = new JsonObject();
+                foreach (var key in Request.Query.Keys)
+                {
+                    if (key != "handler" && key != "__RequestVerificationToken")
+                    {
+                        Console.WriteLine("Key: " + key + " Value: " + Request.Query[key]);
+                        jsonPayload[key] += Request.Query[key];
+                    }
+                }
                 try
                 {
-                    dataList = UsersDataService.SortAndFilterAccountsTable(context, sortBy, Order, RowCount, Id, Name, Type, Status, Tier, Balance, IsVatExempt, CreatedOn);
+                    dataList = TableDataService.SortAndFilterTable(context, jsonPayload);
                 }
                 catch (Exception ex)
                 {
@@ -89,7 +108,9 @@ namespace Model.BO.Pages.UserData
             }
         }
 
+    
 
+        
 
         public IActionResult OnPost(List<string> selectedFiles, string ActionName)
         {

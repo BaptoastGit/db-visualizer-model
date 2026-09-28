@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Model.BO.Data.Model;
 using Model.BO.Service;
+using System.Text.Json.Nodes;
 
 
 namespace Model.BO.Pages.Orders
@@ -13,48 +14,69 @@ namespace Model.BO.Pages.Orders
     public class PricesModel(ModelDbContext context, IAuthorizationService authorizationService) : PageModel
     {
 
-        public List<Price> dataList = [];
+        public List<dynamic> dataList = [];
         public string successMessage;
         public Dictionary<string, string> successMessageList = [];
 
 
-        public async Task<IActionResult> OnGetAsync(string sortBy, string Order, string RowCount = "", string Sku = "", string PriceListCode = "", List<string> Amount = null, string Currency = "", List<string> ValidFrom = null, List<string> ValidTo = null)
+        public async Task<IActionResult> OnGetAsync(string TableName = "Prices")
         {
 
-            //var authorizationResult = await authorizationService.AuthorizeAsync(User, "RequireReaderServiceImport");
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, "RequireReaderPrices");
 
-            //if (authorizationResult.Succeeded)
-            //{
-            try
+            if (authorizationResult.Succeeded)
+            {
+                var jsonPayload = new JsonObject();
+                foreach (var key in Request.Query.Keys)
                 {
-                Console.WriteLine("sortBy:" + sortBy); Console.WriteLine("order:" + Order); 
-                dataList = OrdersService.SortAndFilterPricesTable(context, sortBy, Order, RowCount, Sku, PriceListCode, Amount, Currency, ValidFrom, ValidTo);
+                    if (key != "handler" && key != "__RequestVerificationToken")
+                    {
+                        Console.WriteLine("Key: " + key + " Value: " + Request.Query[key]);
+                        jsonPayload[key] += Request.Query[key];
+                    }
+                }
+                bool hasTableName = jsonPayload.ContainsKey("TableName") && !string.IsNullOrEmpty(jsonPayload["TableName"]?.ToString());
+                if (!hasTableName)
+                {
+                    jsonPayload["TableName"] = TableName;
+                }
+                try
+                {
+                    dataList = TableDataService.SortAndFilterTable(context, jsonPayload);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Exception: " + ex.ToString());
                 }
                 return Page();
-            //}
-            //else
-            //{
-            //    return Redirect("/AccessDenied");
-            //}
+            }
+            else
+            {
+                return Redirect("/AccessDenied");
+            }
         }
 
-        public IActionResult OnGetTableData(string sortBy, string Order, string RowCount = "", string Sku = "", string PriceListCode = "", List<string> Amount = null, string Currency = "", List<string> ValidFrom = null, List<string> ValidTo = null)
+        public IActionResult OnGetTableData()
         {
 
-            //var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireReaderServiceImport").Result;
+            var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireReaderPrices").Result;
 
-            //if (authorizationResult.Succeeded)
-            //{
-            try
+            if (authorizationResult.Succeeded)
+            {
+                var jsonPayload = new JsonObject();
+                foreach (var key in Request.Query.Keys)
                 {
-                    Console.WriteLine("sortBy:" + sortBy); Console.WriteLine("order:" + Order);
-                dataList = OrdersService.SortAndFilterPricesTable(context, sortBy, Order, RowCount, Sku, PriceListCode, Amount, Currency, ValidFrom, ValidTo);
-            }
-            catch (Exception ex)
+                    if (key != "handler" && key != "__RequestVerificationToken")
+                    {
+                        Console.WriteLine("Key: " + key + " Value: " + Request.Query[key]);
+                        jsonPayload[key] += Request.Query[key];
+                    }
+                }
+                try
+                {
+                    dataList = TableDataService.SortAndFilterTable(context, jsonPayload);
+                }
+                catch (Exception ex)
                 {
                     Console.WriteLine("Exception: " + ex.ToString());
                 }
@@ -69,11 +91,11 @@ namespace Model.BO.Pages.Orders
                     ViewData = viewData
 
                 };
-            //}
-            //else
-            //{
-            //    return Redirect("/AccessDenied");
-            //}
+            }
+            else
+            {
+                return Redirect("/AccessDenied");
+            }
         }
 
         //public IActionResult OnPost()

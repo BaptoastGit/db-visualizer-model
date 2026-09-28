@@ -33,6 +33,23 @@
       "name": "Inactive"
     }
   ],
+  "Note": [
+    {
+      "id": "0",
+      "value": "Utilisateur VIP",
+      "name": "Utilisateur VIP"
+    },
+    {
+      "id": "1",
+      "value": "Gratuit",
+      "name": "Free"
+    },
+    {
+      "id": "2",
+      "value": "Payant",
+      "name": "PerformanceTier"
+    }
+  ],
   "Bool": [
     {
       "id": "1",

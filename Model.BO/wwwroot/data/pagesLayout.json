@@ -78,7 +78,10 @@
         "DBColumn": "PhoneNumber"
       },
       "InternalNotes": {
-        "DBColumn": "InternalNotes"
+        "DBColumn": "InternalNotes",
+        "Type": "Fixed Values",
+        "ValuesList": "Note",
+        "SelectAllOptionsLabel": "Select all"
       }
     },
     "Colonne Actions": {

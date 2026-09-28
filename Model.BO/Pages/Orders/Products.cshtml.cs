@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Model.BO.Data.Model;
 using Model.BO.Service;
+using System.Text.Json.Nodes;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
@@ -13,21 +14,35 @@ namespace Model.BO.Pages.Orders
     public class ProductsModel(ModelDbContext context, IAuthorizationService authorizationService) : PageModel
     {
 
-        public List<Product> dataList = [];
+        public List<dynamic> dataList = [];
         public string successMessage;
         public Dictionary<string, string> successMessageList = [];
 
 
-        public async Task<IActionResult> OnGetAsync(string sortBy, string Order, string RowCount = "", string Sku = "", string Title = "", string Category = "", List<string> StockQuantity = null, List<string> IsPublished = null, List<string> WeightKg = null, List<string> ModifiedOn = null)
+        public async Task<IActionResult> OnGetAsync(string TableName = "Products")
         {
-            var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireReaderPrices").Result;
 
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, "RequireReaderProducts");
 
             if (authorizationResult.Succeeded)
             {
+                var jsonPayload = new JsonObject();
+                foreach (var key in Request.Query.Keys)
+                {
+                    if (key != "handler" && key != "__RequestVerificationToken")
+                    {
+                        Console.WriteLine("Key: " + key + " Value: " + Request.Query[key]);
+                        jsonPayload[key] += Request.Query[key];
+                    }
+                }
+                bool hasTableName = jsonPayload.ContainsKey("TableName") && !string.IsNullOrEmpty(jsonPayload["TableName"]?.ToString());
+                if (!hasTableName)
+                {
+                    jsonPayload["TableName"] = TableName;
+                }
                 try
                 {
-                dataList = OrdersService.SortAndFilterProductsTable(context, sortBy, Order, RowCount, Sku, Title, Category, StockQuantity, IsPublished, WeightKg, ModifiedOn);
+                    dataList = TableDataService.SortAndFilterTable(context, jsonPayload);
                 }
                 catch (Exception ex)
                 {
@@ -41,16 +56,25 @@ namespace Model.BO.Pages.Orders
             }
         }
 
-        public  IActionResult OnGetTableData(string sortBy, string Order, string RowCount = "", string Sku = "", string Title = "", string Category = "", List<string> StockQuantity = null, List<string> IsPublished = null, List<string> WeightKg = null, List<string> ModifiedOn = null)
+        public IActionResult OnGetTableData()
         {
-            var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireReaderPrices").Result;
 
+            var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireReaderProducts").Result;
 
             if (authorizationResult.Succeeded)
             {
+                var jsonPayload = new JsonObject();
+                foreach (var key in Request.Query.Keys)
+                {
+                    if (key != "handler" && key != "__RequestVerificationToken")
+                    {
+                        Console.WriteLine("Key: " + key + " Value: " + Request.Query[key]);
+                        jsonPayload[key] += Request.Query[key];
+                    }
+                }
                 try
                 {
-                    dataList = OrdersService.SortAndFilterProductsTable(context, sortBy, Order, RowCount, Sku, Title, Category, StockQuantity, IsPublished, WeightKg, ModifiedOn);
+                    dataList = TableDataService.SortAndFilterTable(context, jsonPayload);
                 }
                 catch (Exception ex)
                 {
