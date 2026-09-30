@@ -29,13 +29,13 @@
                         </a>
                          <div class="collapse collapseNavBar" id="collapseUserData">
                             <div class="nxl-item">
-                                <a href="${window.appRoot}UserData/Accounts" class="nxl-link nav-link sub-nav-link">
+                                <a href="${window.appRoot}UserData/Accounts" page="Accounts" class="nxl-link nav-link sub-nav-link">
                                     <span class="nxl-micon fs-12"><i class="feather-loader fs-6"></i></span>
                                     <span class="nxl-mtext fs-12">Accounts</span>
                                 </a>
                            </div>
                             <div class="nxl-item pb-1">
-                                <a href="${window.appRoot}UserData/Users" class="nxl-link nav-link sub-nav-link">
+                                <a href="${window.appRoot}UserData/Accounts?TableName=Users"  page="Users" class="nxl-link nav-link sub-nav-link">
                                     <span class="nxl-micon fs-12"><i class="feather-airplay fs-6"></i></span>
                                     <span class="nxl-mtext fs-12">Users</span>
                                 </a>
@@ -57,7 +57,7 @@
                         </a>
                          <div class="collapse collapseNavBar" id="collapseMessages">
                             <div class="nxl-item pb-1">
-                                <a href="${window.appRoot}Messages/Messages" class="nxl-link nav-link sub-nav-link">
+                                <a href="${window.appRoot}UserData/Accounts?TableName=Messages"  page="Messages" class="nxl-link nav-link sub-nav-link">
                                     <span class="nxl-micon fs-12"><i class="bi-chat-left-dots fs-6"></i></span>
                                     <span class="nxl-mtext fs-12">Messages</span>
                                 </a>
@@ -79,19 +79,19 @@
                         </a>
                          <div class="collapse collapseNavBar" id="collapseOrders">
                             <div class="nxl-item">
-                                <a href="${window.appRoot}Orders/Orders" class="nxl-link nav-link sub-nav-link">
+                                <a href="${window.appRoot}UserData/Accounts?TableName=Orders"  page="Orders" class="nxl-link nav-link sub-nav-link">
                                     <span class="nxl-micon fs-12"><i class="feather-loader fs-6"></i></span>
                                     <span class="nxl-mtext fs-12">Orders</span>
                                 </a>
                            </div>
                             <div class="nxl-item">
-                                <a href="${window.appRoot}Orders/Products" class="nxl-link nav-link sub-nav-link">
+                                <a href="${window.appRoot}UserData/Accounts?TableName=Products"  page="Products" class="nxl-link nav-link sub-nav-link">
                                     <span class="nxl-micon fs-12"><i class="feather-box fs-6"></i></span>
                                     <span class="nxl-mtext fs-12">Products</span>
                                 </a>
                            </div>
                             <div class="nxl-item pb-1">
-                                <a href="${window.appRoot}Orders/Prices" class="nxl-link nav-link sub-nav-link">
+                                <a href="${window.appRoot}UserData/Accounts?TableName=Prices"  page="Prices" class="nxl-link nav-link sub-nav-link">
                                     <span class="nxl-micon fs-12"><i class="feather-credit-card fs-6"></i></span>
                                     <span class="nxl-mtext fs-12">Prices</span>
                                 </a>
@@ -163,8 +163,10 @@ function addSidebarTogglersListeners() {
 
 function enlightCurrentTab() {
     Array.from(document.querySelectorAll(".sub-nav-link")).forEach(navlink => {
-        const linkPath = new URL(navlink.href, window.location.origin).pathname;
-        if (linkPath == window.location.pathname && window.location.pathname != "/InDevelopment") {
+        const urlParams = new URLSearchParams(window.location.search);
+        currentTab = urlParams.get("TableName") ?? "Accounts";
+
+        if (navlink.getAttribute("page") == currentTab && window.location.pathname != "/InDevelopment") {
             navlink.closest(".collapse").classList.add("show");
             navlink.classList.add("active");
             navlink.closest(".navbar-dropdown").classList.add("active");

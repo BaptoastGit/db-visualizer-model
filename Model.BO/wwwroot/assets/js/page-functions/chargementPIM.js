@@ -2,7 +2,7 @@
 window.onload = async function () {
 
     if (window.location.pathname == '/') {
-        nouvelleURL = `/UserData/Accounts`;
+        nouvelleURL = `/UserData/Accounts?TableName=Accounts`;
         window.history.pushState({}, '', nouvelleURL);
     }
     enableFilters();

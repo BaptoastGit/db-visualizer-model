@@ -1,5 +1,7 @@
 {
   "Accounts": {
+    "Table": "Accounts",
+    "TabIcon": "feather-loader",
     "Colonnes Tables": {
       "Id": {
         "DBColumn": "Id",
@@ -56,6 +58,8 @@
     "Default message": "No account found."
   },
   "Users": {
+    "Table": "Users",
+    "TabIcon": "feather-airplay",
     "Colonnes Tables": {
       "Id": {
         "DBColumn": "Id"
@@ -104,6 +108,8 @@
 
   },
   "Messages": {
+    "Table": "Messages",
+    "TabIcon": "bi-chat-left-dots",
     "Colonnes Tables": {
       "Number of retries": {
         "DBColumn": "RetryCount",
@@ -132,6 +138,8 @@
     "Default message": "No message found."
   },
   "Orders": {
+    "Table": "Orders",
+    "TabIcon": "feather-loader",
     "Colonnes Tables": {
       "OrderNumber": {
         "DBColumn": "OrderNumber"
@@ -195,6 +203,8 @@
     "Default message": "No order found."
   },
   "Prices": {
+    "Table": "Prices",
+    "TabIcon": "feather-credit-card",
     "Colonnes Tables": {
       "Sku": {
         "DBColumn": "Sku"
@@ -204,7 +214,7 @@
       },
       "Amount": {
         "DBColumn": "Amount",
-          "Type": "Number"
+        "Type": "Number"
       },
       "Currency": {
         "DBColumn": "Currency"
@@ -222,6 +232,8 @@
     "Default message": "No order found."
   },
   "Products": {
+    "Table": "Products",
+    "TabIcon": "feather-box",
     "Colonnes Tables": {
       "Sku": {
         "DBColumn": "Sku"

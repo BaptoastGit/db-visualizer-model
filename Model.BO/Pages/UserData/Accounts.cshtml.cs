@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Model.BO.Data.Model;
 using Model.BO.Service;
+using System.ClientModel.Primitives;
 using System.Security.Claims;
 using System.Text.Json.Nodes;
 
@@ -90,9 +91,9 @@ namespace Model.BO.Pages.UserData
                 {
                     Console.WriteLine("Exception: " + ex.ToString());
                 }
-                var viewData = new ViewDataDictionary<AccountsModel>(ViewData, this)
+                var viewData = new ViewDataDictionary<dynamic>(ViewData, this)
                 {
-                    ["Title"] = "Accounts"
+                    ["Title"] = jsonPayload["TableName"]
                 };
 
                 return new PartialViewResult
@@ -155,5 +156,64 @@ namespace Model.BO.Pages.UserData
 
         }
 
+        //public async Task<IActionResult> OnPost()
+        //{
+        //    string formType = Request.Form["FormType"];
+        //    Console.WriteLine("FormType: " + formType);
+        //    if (formType == "Delete")
+        //    {
+        //        var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireAdminContactsPIM").Result;
+        //        if (authorizationResult.Succeeded)
+        //        {
+        //            foreach (var key in Request.Form.Keys)
+        //            {
+        //                if (key != "FormType" && key != "__RequestVerificationToken")
+        //                {
+        //                    Console.WriteLine("Key: " + key + " Value: " + Request.Form[key]);
+        //                    var entity = context.ContactBases.Find(Guid.Parse(key));
+        //                    if (entity != null)
+        //                    {
+        //                        Console.WriteLine("Deleting entity with key: " + key);
+        //                        context.ContactBases.Remove(entity);
+        //                    }
+        //                }
+        //            }
+
+        //        }
+        //        context.SaveChanges();
+        //        return new OkResult();
+        //    }
+        //    else if (formType == "LastModificationDate")
+        //    {
+        //        var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireEditorContactsPIM").Result;
+        //        if (authorizationResult.Succeeded)
+        //        {
+        //            foreach (var key in Request.Form.Keys)
+        //            {
+        //                if (key != "FormType" && key != "__RequestVerificationToken")
+        //                {
+        //                    Console.WriteLine("Key: " + key + " Value: " + Request.Form[key]);
+        //                    context.ContactBases.Find(Guid.Parse(key))?.LastModificationDate = DateTime.Parse(Request.Form[key]);
+
+        //                }
+        //            }
+
+        //        }
+        //        context.SaveChanges();
+        //        return new OkResult();
+
+
+        //    }
+        //    else
+        //    {
+        //        return Redirect("/AccessDenied");
+        //    }
+
+
+
+
+        //}
+
     }
 }
+

@@ -1,11 +1,10 @@
 ﻿@page
-@using System.Text.Json.Nodes;
 @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
 @model Model.BO.Pages.UserData.AccountsModel
 @using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService AuthorizationService
 @{
-    ViewData["Title"] = "Accounts";
+    ViewData["Title"] = string.IsNullOrEmpty(Request.Query["TableName"])  ? "Accounts" : Request.Query["TableName"];
 }
 
 <!DOCTYPE html>
