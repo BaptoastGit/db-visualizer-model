@@ -1,0 +1,54 @@
+﻿@using System.Text.Json.Nodes;
+@using Microsoft.AspNetCore.Authorization
+
+
+@{
+    JsonNode pageConfig = JsonNode.Parse(System.IO.File.ReadAllText("wwwroot/data/pagesLayout.json"));
+
+}
+<nav class="nxl-navigation sidebar" id="navbar">
+    <div class="navbar-wrapper">
+        <div class="m-header">
+            <a href="~/UserData/Accounts" class="b-brand">
+                <img src="https://img.icons8.com/?size=100&id=Md3k8zGyt289&format=png&color=000000" style="max-height:50px"></img>
+            </a>
+        </div>
+        <div class="navbar-content">
+            <ul class="nxl-navbar">
+                <li class="nxl-item nxl-caption">
+                    <label>Navigation</label>
+                </li>
+
+                <li class="navbar-dropdown">
+                    <a type="button" data-bs-toggle="collapse" href="#collapseUserData" role="button" aria-expanded="false" aria-controls="collapseUserData" class="nxl-link nav-link nav-group d-flex justify-content-between">
+                        <div>
+                            <span class="nxl-micon"><i class="feather-user"></i></span>
+                            <span class="nxl-mtext">UserData</span>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <i class="bi-chevron-right"></i>
+                            <i class="bi-chevron-down"></i>
+
+                        </div>
+
+                    </a>
+                    <div class="collapse collapseNavBar" id="collapseUserData">
+
+                        @foreach (var page in (JsonObject)pageConfig)
+                        {
+                            Console.WriteLine(page.Key);
+                            JsonNode jsonValues = page.Value.AsObject();
+
+                        <div class="nxl-item">
+                                <a href="~/UserData/Accounts?TableName=@(jsonValues["Table"])" page="@(jsonValues["Table"])" class="nxl-link nav-link sub-nav-link">
+                                    <span class="nxl-micon fs-12"><i class="@(jsonValues["TabIcon"]) fs-6"></i></span>
+                                    <span class="nxl-mtext fs-12">@(page.Key)</span>
+                            </a>
+                        </div>
+                        }
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

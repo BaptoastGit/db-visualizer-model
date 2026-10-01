@@ -19,7 +19,7 @@
 
 function ResetFilters() {
     sessionStorage.setItem("SortFormData" + document.body.dataset.pageTitle, "");
-    window.location.href = window.location.pathname;
+    window.location.href = window.location.pathname + "?TableName=" + document.body.dataset.pageTitle;
 
 }
 
