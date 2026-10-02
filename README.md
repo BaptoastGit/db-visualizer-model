@@ -152,6 +152,94 @@ using (var scope = app.Services.CreateScope())
     // DemoDb.GenerateFakeDb(context);
 }
 ```
+4. Fill the [Entity Framework Core](https://learn.microsoft.com/en-us/ef/core/managing-schemas/scaffolding/?tabs=dotnet-core-cli) DbContext with this command:
+```terminal
+dotnet ef dbcontext scaffold "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Chinook" Microsoft.EntityFrameworkCore.SqlServer
+```
+You should see the replication of your db in the Model.BO.Data/Model Folder.
+
+## Display the tables
+
+1. Fill the pagesLayout.json file with the tables you want to show:
+```json
+  "Messages": { -> Page name
+    "Table": "Messages", -> Table Related
+    "NavigationGroup": "Messages",
+    "TabIcon": "bi-chat-left-dots",
+    "Colonnes Tables": { -> Columns Shown
+      "Number of retries": { -> Column Customization
+        "DBColumn": "RetryCount",
+        "Type": "Number"
+      },
+      "ProcessedOn": {
+        "DBColumn": "ProcessedOn",
+        "Type": "DateTime"
+      },
+      "CorrelationId": {
+        "DBColumn": "CorrelationId"
+      }
+    },
+    "VisibleColumnsOnMobile": [ "ErrorMessage", "Priority", "PayloadSize" ],
+    "EditableColumns": [ "ProcessedOn", "CorrelationId", "Priority" ],
+    "DeletableRows": true,
+    "Default message": "No message found."
+  },
+  "Prices": {
+  "Table": "Prices",
+  "NavigationGroup": "Orders",
+  "TabIcon": "feather-credit-card",
+  "Colonnes Tables": {
+    "Currency": {
+      "DBColumn": "Currency",
+      "Type": "Fixed Values",  -> Custom List of Filter Options (data.json)
+      "ValuesList": "Currency",
+      "SelectAllOptionsLabel": "Any"
+    },
+    ...
+  },
+  "VisibleColumnsOnMobile": [ "Sku", "Amount", "ValidTo" ],
+  "Default message": "No order found."
+  }
+```
+
+2. If you make navigation groups, you can customize the incon in the data.json file.
+
+### Create custom actions
+
+You can add additional pages or actions related to specific rows:
+
+#### Action with a specific row (detailPage, customPage) 
+
+```json
+    "Colonne Actions": { -> Action Row
+      "Buttons": {
+        "User details": { 
+          "StatusRequired": "ReaderUsers", -> Status Required to show the button
+          "Icon": "bi-eye",
+          "Link": {
+            "Href": "~/UserData/UserDetail",
+            "Parameters": {
+              "Id": "Id" 
+            }
+          }
+        }
+      }
+    },
+``` 
+#### Action to a group of rows (Send back a message, save a file)
+```json
+"Header Actions": {
+  "Send verification link": {
+    "Icon": "bi-upload",
+    "Function": "SendSelectedFileNames('VerificationLink')"
+  },
+  "Add account to log": {
+    "Icon": "bi-arrow-repeat",
+    "Function": "SendSelectedFileNames('Log')"
+  }
+}
+```
+___ 
 
 
 

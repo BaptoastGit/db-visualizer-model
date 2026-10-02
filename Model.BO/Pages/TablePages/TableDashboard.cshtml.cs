@@ -146,7 +146,7 @@ namespace Model.BO.Pages.UserData
                     errorMessage = ex.Message;
                 }
 
-                return RedirectToPage("/UserData/Accounts", new { success = successMessage, error = errorMessage });
+                return RedirectToPage("/TablePages/TableDashboard", new { success = successMessage, error = errorMessage });
 
             }
             else

@@ -96,7 +96,7 @@
           "StatusRequired": "ReaderUsers",
           "Icon": "bi-eye",
           "Link": {
-            "Href": "~/UserData/UserDetail",
+            "Href": "~/TablePages/UserDetail",
             "Parameters": {
               "Id": "Id"
             }
