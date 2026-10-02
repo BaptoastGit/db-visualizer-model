@@ -2,13 +2,16 @@
 window.onload = async function () {
 
     if (window.location.pathname == '/') {
-        nouvelleURL = `/UserData/Accounts?TableName=Accounts`;
+        nouvelleURL = `/TablePages/TableDashboard?TableName=Accounts`;
         window.history.pushState({}, '', nouvelleURL);
     }
+    initializeCollapseHandlers();
+
     enableFilters();
     enlightCurrentTab();
 
 };
+
 
 function checkRowBox(id) {
     let allCheckboxes = Array.from(document.querySelectorAll('.checkbox-labels.checked'));

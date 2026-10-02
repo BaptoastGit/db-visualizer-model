@@ -13,7 +13,7 @@ using System.Text.Json.Nodes;
 namespace Model.BO.Pages.UserData
 {
 
-    public class AccountsModel(ModelDbContext context, IAuthorizationService authorizationService, IConfiguration configuration) : PageModel
+    public class TableDashBoardModel(ModelDbContext context, IAuthorizationService authorizationService, IConfiguration configuration) : PageModel
     {
         private readonly IConfiguration _configuration = configuration;
         public List<dynamic> dataList = [];

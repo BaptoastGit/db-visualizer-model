@@ -8,7 +8,7 @@
                         <h5 class="m-b-10">Dashboard</h5>
                     </div>
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="${window.location.pathname}">${document.body.dataset.pageTitle}</a></li>
+                        <li class="breadcrumb-item"><a href="${window.location.pathname}?TableName=${document.body.dataset.pageTitle}">${document.body.dataset.pageTitle}</a></li>
                     </ul>
                 </div>
                 <div class="page-header-right  d-flex ms-auto gap-4" id="pageHeaderRight">

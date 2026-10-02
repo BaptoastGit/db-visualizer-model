@@ -112,5 +112,27 @@
       "name": "Check In",
       "value": "Check In"
     }
-  ]
+  ],
+  "Currency": [
+    {
+      "id": "1",
+      "name": "US Dollar",
+      "value": "USD"
+    },
+    {
+      "id": "2",
+      "name": "GB Pound",
+      "value": "GBP"
+    },
+    {
+      "id": "3",
+      "name": "Euro",
+      "value": "EUR"
+    }
+  ],
+  "NavigationGroupsIcons": {
+    "UsersData": "feather-user",
+    "Messages": "bi-chat-left-text",
+    "Orders": "feather-compass"
+  } 
 }

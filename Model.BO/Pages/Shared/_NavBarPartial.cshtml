@@ -4,12 +4,13 @@
 
 @{
     JsonNode pageConfig = JsonNode.Parse(System.IO.File.ReadAllText("wwwroot/data/pagesLayout.json"));
+    JsonNode navGroups = JsonNode.Parse(System.IO.File.ReadAllText("wwwroot/data/data.json"))["NavigationGroupsIcons"];
 
 }
 <nav class="nxl-navigation sidebar" id="navbar">
     <div class="navbar-wrapper">
         <div class="m-header">
-            <a href="~/UserData/Accounts" class="b-brand">
+            <a href="~/TablePages/TableDashboard?TableName=Accounts" class="b-brand">
                 <img src="https://img.icons8.com/?size=100&id=Md3k8zGyt289&format=png&color=000000" style="max-height:50px"></img>
             </a>
         </div>
@@ -19,35 +20,45 @@
                     <label>Navigation</label>
                 </li>
 
-                <li class="navbar-dropdown">
-                    <a type="button" data-bs-toggle="collapse" href="#collapseUserData" role="button" aria-expanded="false" aria-controls="collapseUserData" class="nxl-link nav-link nav-group d-flex justify-content-between">
-                        <div>
-                            <span class="nxl-micon"><i class="feather-user"></i></span>
-                            <span class="nxl-mtext">UserData</span>
-                        </div>
-                        <div class="d-flex justify-content-end">
-                            <i class="bi-chevron-right"></i>
-                            <i class="bi-chevron-down"></i>
 
-                        </div>
-
-                    </a>
-                    <div class="collapse collapseNavBar" id="collapseUserData">
-
-                        @foreach (var page in (JsonObject)pageConfig)
+                        @foreach (var navGroup in (JsonObject)navGroups)
                         {
-                            Console.WriteLine(page.Key);
-                            JsonNode jsonValues = page.Value.AsObject();
+                           <li class="navbar-dropdown">
+                        <a type="button" data-bs-toggle="collapse" href="#collapse@(navGroup.Key)" role="button" aria-expanded="false" aria-controls="collapse@(navGroup.Key)" class="nxl-link nav-link nav-group d-flex justify-content-between">
+                                    <div>
+                                        <span class="nxl-micon"><i class="@(navGroup.Value)"></i></span>
+                                        <span class="nxl-mtext">@(navGroup.Key)</span>
+                                    </div>
+                                    <div class="d-flex justify-content-end">
+                                        <i class="bi-chevron-right" ></i>
+                                <i class="bi-chevron-down" style="display:none"></i>
 
-                        <div class="nxl-item">
-                                <a href="~/UserData/Accounts?TableName=@(jsonValues["Table"])" page="@(jsonValues["Table"])" class="nxl-link nav-link sub-nav-link">
-                                    <span class="nxl-micon fs-12"><i class="@(jsonValues["TabIcon"]) fs-6"></i></span>
-                                    <span class="nxl-mtext fs-12">@(page.Key)</span>
-                            </a>
-                        </div>
-                        }
-                    </div>
-                </li>
+                                    </div>
+
+                                </a>
+                                <div class="collapse collapseNavBar pb-1" id="collapse@(navGroup.Key)">
+
+                                @foreach (var page in (JsonObject)pageConfig)
+                                    {
+                                        JsonNode jsonValues = page.Value.AsObject();
+                                @if (jsonValues["NavigationGroup"].ToString() == navGroup.Key)
+                                {
+                                    Console.WriteLine(page.Key);
+
+
+                                    <div class="nxl-item">
+                                        <a href="~/TablePages/TableDashboard?TableName=@(jsonValues["Table"])" page="@(jsonValues["Table"])" class="nxl-link nav-link sub-nav-link">
+                                            <span class="nxl-micon fs-12"><i class="@(jsonValues["TabIcon"]) fs-6"></i></span>
+                                            <span class="nxl-mtext fs-12">@(page.Key)</span>
+                                        </a>
+                                    </div>
+                                    
+                                }
+
+                                    }
+                               </div>
+                           </li>
+                        } 
             </ul>
         </div>
     </div>

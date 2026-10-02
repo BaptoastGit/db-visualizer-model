@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.EntityFrameworkCore;
 using Model.BO.Data.Model;
@@ -54,7 +53,7 @@ builder.Services
 builder.Services.AddRazorPages()
     .AddRazorPagesOptions(options =>
     {
-        options.Conventions.AddPageRoute("/UserData/Accounts", "");
+        options.Conventions.AddPageRoute("/TablePages/TableDashboard", "");
     });
 
 

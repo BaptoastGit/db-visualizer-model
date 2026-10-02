@@ -1,6 +1,7 @@
 {
   "Accounts": {
     "Table": "Accounts",
+    "NavigationGroup": "UsersData",
     "TabIcon": "feather-loader",
     "Colonnes Tables": {
       "Id": {
@@ -59,6 +60,7 @@
   },
   "Users": {
     "Table": "Users",
+    "NavigationGroup": "UsersData",
     "TabIcon": "feather-airplay",
     "Colonnes Tables": {
       "Id": {
@@ -109,6 +111,7 @@
   },
   "Messages": {
     "Table": "Messages",
+    "NavigationGroup": "Messages",
     "TabIcon": "bi-chat-left-dots",
     "Colonnes Tables": {
       "Number of retries": {
@@ -139,6 +142,7 @@
   },
   "Orders": {
     "Table": "Orders",
+    "NavigationGroup": "Orders",
     "TabIcon": "feather-loader",
     "Colonnes Tables": {
       "OrderNumber": {
@@ -175,35 +179,12 @@
         "Type": "DateTime"
       }
     },
-    "Colonne Actions": {
-      "Buttons": {
-        "Détails de la commande": {
-          "StatusRequired": "ReaderOrders",
-          "Icon": "bi-eye",
-          "Link": {
-            "Href": "~/RDC/TransactionDetail",
-            "Parameters": {
-              "Id": "OrderNumber"
-            }
-          }
-        },
-        "Edit values": {
-          "StatusRequired": "ReaderOrders",
-          "Icon": "bi-cart",
-          "Link": {
-            "Href": "~/RDC/TransactionDetailProduits",
-            "Parameters": {
-              "Id": "OrderNumber"
-            }
-          }
-        }
-      }
-    },
     "VisibleColumnsOnMobile": [ "OrderNumber", "OrderStatus", "TotalAmount", "OrderedOn" ],
     "Default message": "No order found."
   },
   "Prices": {
     "Table": "Prices",
+    "NavigationGroup": "Orders",
     "TabIcon": "feather-credit-card",
     "Colonnes Tables": {
       "Sku": {
@@ -217,7 +198,10 @@
         "Type": "Number"
       },
       "Currency": {
-        "DBColumn": "Currency"
+        "DBColumn": "Currency",
+        "Type": "Fixed Values",
+        "ValuesList": "Currency",
+        "SelectAllOptionsLabel": "Any"
       },
       "ValidFrom": {
         "DBColumn": "ValidFrom",
@@ -233,6 +217,7 @@
   },
   "Products": {
     "Table": "Products",
+    "NavigationGroup": "Orders",
     "TabIcon": "feather-box",
     "Colonnes Tables": {
       "Sku": {

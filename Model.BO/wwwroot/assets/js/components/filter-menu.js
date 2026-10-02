@@ -8,7 +8,7 @@
         initializeInputValues();
     }
 
-    //Add the listener on the search button to save FilteredInputs
+    //Adds the listener on the search button to save FilteredInputs
     saveFilterOptions();
 
     displayResetButtonAfterUserChanges();

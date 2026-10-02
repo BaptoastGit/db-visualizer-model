@@ -1,152 +1,42 @@
-﻿class Navbar extends HTMLElement {
-    connectedCallback() {
-        this.innerHTML = `
-        <nav class="nxl-navigation sidebar" id="navbar">
-        <div class="navbar-wrapper">
-            <div class="m-header">
-                <a href="${window.appRoot}UserData/Accounts" class="b-brand">
-                    <img  src="https://img.icons8.com/?size=100&id=Md3k8zGyt289&format=png&color=000000" style="max-height:50px"></img>
-                </a>
-            </div>
-            <div class="navbar-content">
-                <ul class="nxl-navbar">
-                    <li class="nxl-item nxl-caption">
-                        <label>Navigation</label>
-                    </li>
-                  
-                    <li class="navbar-dropdown">
-                        <a type="button" data-bs-toggle="collapse" href="#collapseUserData" role="button" aria-expanded="false" aria-controls="collapseUserData" class="nxl-link nav-link nav-group d-flex justify-content-between">
-                                <div>
-                                    <span class="nxl-micon"><i class="feather-user"></i></span>
-                                    <span class="nxl-mtext">UserData</span>
-                                </div>
-                                <div class="d-flex justify-content-end">
-                                    <i class="bi-chevron-right"></i>
-                                    <i class="bi-chevron-down"></i>
+﻿
+function initializeCollapseHandlers() {
+    const navBar = document.getElementById("navbar")
+    const collapseButtons = navBar.querySelectorAll('[data-bs-toggle="collapse"]');
 
-                                </div>
+    collapseButtons.forEach(button => {
+        const collapseId = button.getAttribute('href')?.substring(1);
 
-                        </a>
-                         <div class="collapse collapseNavBar" id="collapseUserData">
-                            <div class="nxl-item">
-                                <a href="${window.appRoot}UserData/Accounts" page="Accounts" class="nxl-link nav-link sub-nav-link">
-                                    <span class="nxl-micon fs-12"><i class="feather-loader fs-6"></i></span>
-                                    <span class="nxl-mtext fs-12">Accounts</span>
-                                </a>
-                           </div>
-                            <div class="nxl-item pb-1">
-                                <a href="${window.appRoot}UserData/Accounts?TableName=Users"  page="Users" class="nxl-link nav-link sub-nav-link">
-                                    <span class="nxl-micon fs-12"><i class="feather-airplay fs-6"></i></span>
-                                    <span class="nxl-mtext fs-12">Users</span>
-                                </a>
-                           </div>                       
-                        </div>
-                    </li>
-                     <li class="navbar-dropdown">
-                        <a type="button" data-bs-toggle="collapse" href="#collapseMessages" role="button" aria-expanded="false" aria-controls="collapseMessages" class="nxl-link nav-link nav-group d-flex justify-content-between">
-                                <div>
-                                    <span class="nxl-micon"><i class="bi-chat-left-text"></i></span>
-                                    <span class="nxl-mtext">Messages</span>
-                                </div>
-                                <div class="d-flex justify-content-end">
-                                    <i class="bi-chevron-right"></i>
-                                    <i class="bi-chevron-down"></i>
+        const collapseElement = navBar.querySelector(`#${collapseId}`);
+        if (collapseElement) {
+            collapseElement.addEventListener('show.bs.collapse', () => {
+                updateChevrons(button, true);
+            });
 
-                                </div>
+            collapseElement.addEventListener('hidden.bs.collapse', () => {
+                updateChevrons(button, false);
+            });
 
-                        </a>
-                         <div class="collapse collapseNavBar" id="collapseMessages">
-                            <div class="nxl-item pb-1">
-                                <a href="${window.appRoot}UserData/Accounts?TableName=Messages"  page="Messages" class="nxl-link nav-link sub-nav-link">
-                                    <span class="nxl-micon fs-12"><i class="bi-chat-left-dots fs-6"></i></span>
-                                    <span class="nxl-mtext fs-12">Messages</span>
-                                </a>
-                           </div>
-                        </div>
-                    </li>
-                    <li class="navbar-dropdown">
-                        <a type="button" data-bs-toggle="collapse" href="#collapseOrders" role="button" aria-expanded="false" aria-controls="collapseOrders" class="nxl-link nav-link nav-group d-flex justify-content-between">
-                                <div>
-                                    <span class="nxl-micon"><i class="feather-compass"></i></span>
-                                    <span class="nxl-mtext">Orders</span>
-                                </div>
-                               <div class="d-flex justify-content-end">
-                                    <i class="bi-chevron-right"></i>
-                                    <i class="bi-chevron-down"></i>
+            updateChevrons(button, button.getAttribute('aria-expanded') === 'true');
+        }
 
-                                </div>
+    });
 
-                        </a>
-                         <div class="collapse collapseNavBar" id="collapseOrders">
-                            <div class="nxl-item">
-                                <a href="${window.appRoot}UserData/Accounts?TableName=Orders"  page="Orders" class="nxl-link nav-link sub-nav-link">
-                                    <span class="nxl-micon fs-12"><i class="feather-loader fs-6"></i></span>
-                                    <span class="nxl-mtext fs-12">Orders</span>
-                                </a>
-                           </div>
-                            <div class="nxl-item">
-                                <a href="${window.appRoot}UserData/Accounts?TableName=Products"  page="Products" class="nxl-link nav-link sub-nav-link">
-                                    <span class="nxl-micon fs-12"><i class="feather-box fs-6"></i></span>
-                                    <span class="nxl-mtext fs-12">Products</span>
-                                </a>
-                           </div>
-                            <div class="nxl-item pb-1">
-                                <a href="${window.appRoot}UserData/Accounts?TableName=Prices"  page="Prices" class="nxl-link nav-link sub-nav-link">
-                                    <span class="nxl-micon fs-12"><i class="feather-credit-card fs-6"></i></span>
-                                    <span class="nxl-mtext fs-12">Prices</span>
-                                </a>
-                           </div>                           
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-        `;
+}
 
-        this.initializeCollapseHandlers();
-    }
+function updateChevrons(button, isExpanded) {
+    const chevronRight = button.querySelector('.bi-chevron-right');
+    const chevronDown = button.querySelector('.bi-chevron-down');
 
-    initializeCollapseHandlers() {
-        const collapseButtons = this.querySelectorAll('[data-bs-toggle="collapse"]');
-
-        collapseButtons.forEach(button => {
-            const collapseId = button.getAttribute('href')?.substring(1);
-            
-                const collapseElement = this.querySelector(`#${collapseId}`);
-                if (collapseElement) {
-                    collapseElement.addEventListener('show.bs.collapse', () => {
-                        this.updateChevrons(button, true);
-                    });
-
-                    collapseElement.addEventListener('hidden.bs.collapse', () => {
-                        this.updateChevrons(button, false);
-                    });
-
-                    this.updateChevrons(button, button.getAttribute('aria-expanded') === 'true');
-                }
-            
-        });
-    }
-
-    updateChevrons(button, isExpanded) {
-        const chevronRight = button.querySelector('.bi-chevron-right');
-        const chevronDown = button.querySelector('.bi-chevron-down');
-
-        if (chevronRight && chevronDown) {
-            if (isExpanded) {
-                chevronRight.style.display = 'none';
-                chevronDown.style.display = 'flex';
-            } else {
-                chevronRight.style.display = 'flex';
-                chevronDown.style.display = 'none';
-            }
+    if (chevronRight && chevronDown) {
+        if (isExpanded) {
+            chevronRight.style.display = 'none';
+            chevronDown.style.display = 'flex';
+        } else {
+            chevronRight.style.display = 'flex';
+            chevronDown.style.display = 'none';
         }
     }
 }
-customElements.define('navigation-menu', Navbar);
-
-
 function addSidebarTogglersListeners() {
     document.getElementById("mobile-collapse").addEventListener("click", function () {
         document.getElementById("navbar").classList.toggle("mob-navigation-active");
@@ -164,7 +54,7 @@ function addSidebarTogglersListeners() {
 function enlightCurrentTab() {
     Array.from(document.querySelectorAll(".sub-nav-link")).forEach(navlink => {
         const urlParams = new URLSearchParams(window.location.search);
-        currentTab = urlParams.get("TableName") ?? "Accounts";
+        currentTab = urlParams.get("TableName") ?? "";
 
         if (navlink.getAttribute("page") == currentTab && window.location.pathname != "/InDevelopment") {
             navlink.closest(".collapse").classList.add("show");
