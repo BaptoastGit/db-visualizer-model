@@ -1,7 +1,6 @@
 ﻿function makeColumnEditable(columnsName) {
     window.editableRights = true;
     window.editableColumns = columnsName;
-    addSaveButton();
     document.querySelectorAll(".edit-pencil").forEach(pencil => {
         pencil.addEventListener('click', (event) => {
             if (event.target.closest("td").querySelector("span").innerText.includes("/")) { //Show date picker if the value is a date
@@ -49,14 +48,14 @@ function addSaveButton() {
 
 
 function ResetColumnsValues() {
-    window.location.href = window.location.pathname;
+    window.location.href = window.location.pathname + "?TableName=" + document.body.dataset.pageTitle;
 }
 
 async function SaveColumnsValues() {
     const requetes = [];
     console.log(document.querySelectorAll(".edit-forms"));
     document.querySelectorAll(".edit-forms").forEach(form => {
-        if (form.childElementCount > 2) {
+        if (form.childElementCount > 3) {
             requetes.push(
                 fetch(form.action, {
                     method: "POST",
@@ -70,7 +69,7 @@ async function SaveColumnsValues() {
         try {
             const reponses = await Promise.all(requetes);
             const success = reponses.every(reponse => reponse.ok);
-            window.location.href = window.location.pathname;
+            window.location.href = window.location.pathname + "?TableName=" + document.body.dataset.pageTitle;
         }
         catch {
             console.log("Erreur lors de l'envoi des requêtes");
@@ -80,6 +79,7 @@ async function SaveColumnsValues() {
 
 
 function deletableRows() {
+    if (!document.getElementById("cancelButton")) addSaveButton();
     window.adminRights = true;
     rows = document.querySelectorAll(`tr:not(#mainTable)`);
     rows.forEach(row => {
@@ -95,21 +95,49 @@ function deletableRows() {
         lastCell.classList.add("position-relative");
 
         bin.addEventListener("click", (event) => {
+            let rowId = event.target.parentElement.parentElement.firstElementChild.innerText == "" ? event.target.parentElement.parentElement.children[1].innerText : event.target.parentElement.parentElement.firstElementChild.innerText;
             if (event.target.closest("tr").classList.contains("deleted")) {
                 event.target.closest("tr").classList.remove("deleted");
                 event.target.closest("tr").style.backgroundColor = "";
-                document.getElementById("Deleteform").querySelector(`input[name="${event.target.parentElement.parentElement.firstElementChild.innerText}"]`).remove();
+                document.getElementById("Deleteform").querySelector(`input[name="${rowId}"]`).remove();
             } else {
                 event.target.closest("tr").classList.add("deleted");
                 event.target.closest("tr").style.backgroundColor = "#f8d7da";
                 document.getElementById("cancelButton").classList.remove("d-none");
                 document.getElementById("saveButton").classList.remove("d-none");
-                document.getElementById("Deleteform").innerHTML += `<input type="hidden" name="${event.target.parentElement.parentElement.firstElementChild.innerText}" value="true"> `;
+                document.getElementById("Deleteform").innerHTML += `<input name="${rowId}" value="true"> `;
             }
 
         });
         lastCell.appendChild(bin);
     });
 
+    rows = document.querySelectorAll(".table-rows");
+    rows.forEach(row => {
+        row.addEventListener('mouseenter', function () {
+            row.querySelectorAll("i:not(.link-icon)").forEach(icon => {
+                icon.classList.remove("invisible");
+            });
+        });
+        row.addEventListener('mouseleave', function () {
+            row.querySelectorAll("i:not(.link-icon)").forEach(icon => {
+                icon.classList.add("invisible");
+            });
+        });
+    });
 
+
+}
+
+
+function addEditToForm() {
+    document.getElementById("cancelButton").classList.remove("d-none");
+    document.getElementById("saveButton").classList.remove("d-none");
+    form = event.target.parentElement.classList.contains("InternalNotes") ? document.getElementById("InternalNotesForm") : document.getElementById("PhoneNumberForm");
+    name = event.target.parentElement.classList.contains("InternalNotes") ? event.target.parentElement.previousElementSibling.title : event.target.parentElement.title
+    if (form.querySelector(`input[name="${name}"]`)) {
+        form.querySelector(`input[name="${name}"]`).value = event.target.value;
+    } else {
+        form.innerHTML += `<input name="${name}" value="${event.target.value}">`;
+    }
 }

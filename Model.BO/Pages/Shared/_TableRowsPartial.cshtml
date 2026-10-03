@@ -157,6 +157,21 @@ else
         <td class="fs-5 d-none d-lg-table-cell" colspan="@columnCount" style="text-align: center;">@pageConfig["Default message"]</td>
     </tr>
 }
+
+@if (pageConfig?["EditableColumns"] is JsonArray editableColumns && (await AuthorizationService.AuthorizeAsync(User, "RequireEditor" + ViewData["title"].ToString())).Succeeded)
+{
+
+    <script>
+        makeColumnEditable(@Json.Serialize(editableColumns));
+    </script>
+}
+@if (pageConfig["DeletableRows"] != null && (await AuthorizationService.AuthorizeAsync(User, "RequireAdmin" + ViewData["title"].ToString())).Succeeded)
+{
+    <script>
+        deletableRows();
+    </script>
+
+}
 @{
     ViewContext.HttpContext.Items["rowCount"] = row;
 }

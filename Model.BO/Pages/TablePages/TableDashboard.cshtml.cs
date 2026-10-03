@@ -107,12 +107,50 @@ namespace Model.BO.Pages.TablePages
 
         public IActionResult OnPost(List<string> selectedFiles, string ActionName, string TableName = "Accounts")
         {
-
             var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireEditor" + TableName).Result;
             if (!authorizationResult.Succeeded)
             {
                 return RedirectToPage("/AccessDenied");
 
+            }
+
+            string formType = Request.Form["FormType"];
+            Console.WriteLine("FormType: " + formType);
+            if (formType == "Delete")
+            {
+                authorizationResult = authorizationService.AuthorizeAsync(User, "RequireAdmin" + TableName).Result;
+                if (authorizationResult.Succeeded)
+                {
+                    foreach (var key in Request.Form.Keys)
+                    {
+                        if (key != "TableName" && key != "FormType" && key != "__RequestVerificationToken")
+                        {
+                            Console.WriteLine("Key: " + key + " Value: " + Request.Form[key]);
+
+                            string entityName = TableName?.TrimEnd('s', 'S') ?? "Accounts";
+                            var entityType = (context.Model.GetEntityTypes()
+                                    .FirstOrDefault(e => e.ClrType.Name.Equals(entityName, StringComparison.OrdinalIgnoreCase))?.ClrType) ?? throw new InvalidOperationException($"L'entité '{entityName}' est introuvable dans le DbContext.");
+                            object? entity;
+                            if (Guid.TryParse(key, out Guid guidKey))
+                            {
+                                entity = context.Find(entityType, Guid.Parse(key));
+
+                            }
+                            else
+                            {
+                                entity = context.Find(entityType, key);
+                            }
+                            if (entity != null)
+                            {
+                                Console.WriteLine("Deleting entity with key: " + key);
+                                context.Remove(entity);
+                            }
+                        }
+                    }
+
+                }
+                context.SaveChanges();
+                return new OkResult();
             }
             try
                 {
@@ -144,58 +182,59 @@ namespace Model.BO.Pages.TablePages
 
         }
 
-        //public async Task<IActionResult> OnPost()
+        //public async Task<IActionResult> OnPostEditValues()
         //{
-        //    string formType = Request.Form["FormType"];
-        //    Console.WriteLine("FormType: " + formType);
-        //    if (formType == "Delete")
-        //    {
-        //        var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireAdminContactsPIM").Result;
-        //        if (authorizationResult.Succeeded)
-        //        {
-        //            foreach (var key in Request.Form.Keys)
-        //            {
-        //                if (key != "FormType" && key != "__RequestVerificationToken")
-        //                {
-        //                    Console.WriteLine("Key: " + key + " Value: " + Request.Form[key]);
-        //                    var entity = context.ContactBases.Find(Guid.Parse(key));
-        //                    if (entity != null)
-        //                    {
-        //                        Console.WriteLine("Deleting entity with key: " + key);
-        //                        context.ContactBases.Remove(entity);
-        //                    }
-        //                }
-        //            }
 
-        //        }
-        //        context.SaveChanges();
-        //        return new OkResult();
-        //    }
-        //    else if (formType == "LastModificationDate")
-        //    {
-        //        var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireEditorContactsPIM").Result;
-        //        if (authorizationResult.Succeeded)
-        //        {
-        //            foreach (var key in Request.Form.Keys)
-        //            {
-        //                if (key != "FormType" && key != "__RequestVerificationToken")
-        //                {
-        //                    Console.WriteLine("Key: " + key + " Value: " + Request.Form[key]);
-        //                    context.ContactBases.Find(Guid.Parse(key))?.LastModificationDate = DateTime.Parse(Request.Form[key]);
+            //string formType = Request.Form["FormType"];
+            //Console.WriteLine("FormType: " + formType);
+            //if (formType == "Delete")
+            //{
+            //    var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireAdminContactsPIM").Result;
+            //    if (authorizationResult.Succeeded)
+            //    {
+            //        foreach (var key in Request.Form.Keys)
+            //        {
+            //            if (key != "FormType" && key != "__RequestVerificationToken")
+            //            {
+            //                Console.WriteLine("Key: " + key + " Value: " + Request.Form[key]);
+            //                var entity = context.ContactBases.Find(Guid.Parse(key));
+            //                if (entity != null)
+            //                {
+            //                    Console.WriteLine("Deleting entity with key: " + key);
+            //                    context.ContactBases.Remove(entity);
+            //                }
+            //            }
+            //        }
 
-        //                }
-        //            }
+            //    }
+            //    context.SaveChanges();
+            //    return new OkResult();
+            //}
+            //else if (formType == "LastModificationDate")
+            //{
+            //    var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireEditorContactsPIM").Result;
+            //    if (authorizationResult.Succeeded)
+            //    {
+            //        foreach (var key in Request.Form.Keys)
+            //        {
+            //            if (key != "FormType" && key != "__RequestVerificationToken")
+            //            {
+            //                Console.WriteLine("Key: " + key + " Value: " + Request.Form[key]);
+            //                context.ContactBases.Find(Guid.Parse(key))?.LastModificationDate = DateTime.Parse(Request.Form[key]);
 
-        //        }
-        //        context.SaveChanges();
-        //        return new OkResult();
+            //            }
+            //        }
+
+            //    }
+            //    context.SaveChanges();
+            //    return new OkResult();
 
 
-        //    }
-        //    else
-        //    {
-        //        return Redirect("/AccessDenied");
-        //    }
+            //}
+            //else
+            //{
+            //    return Redirect("/AccessDenied");
+            //}
 
 
 
