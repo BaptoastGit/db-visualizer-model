@@ -6,7 +6,7 @@ using Model.BO.Data.Model;
 
 
 
-namespace Model.BO.Pages.UserData
+namespace Model.BO.Pages.TablePages
 {
     public class UserDetailModel(ModelDbContext context, IAuthorizationService authorizationService) : PageModel
     {

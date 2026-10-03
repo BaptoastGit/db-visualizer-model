@@ -2,15 +2,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.EntityFrameworkCore;
 using Model.BO.Data.Model;
 using Model.BO.Service;
-using System.ClientModel.Primitives;
-using System.Security.Claims;
 using System.Text.Json.Nodes;
 
 
-namespace Model.BO.Pages.UserData
+namespace Model.BO.Pages.TablePages
 {
 
     public class TableDashBoardModel(ModelDbContext context, IAuthorizationService authorizationService, IConfiguration configuration) : PageModel
@@ -33,47 +30,47 @@ namespace Model.BO.Pages.UserData
         public async Task<IActionResult> OnGetAsync(string TableName = "Accounts")
         {
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, "RequireReaderAccounts");
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, "RequireReader" + TableName);
+            if (!authorizationResult.Succeeded)
+            {
+                return RedirectToPage("/AccessDenied");
 
-            if (authorizationResult.Succeeded)
-            {
-                var jsonPayload = new JsonObject();
-                foreach (var key in Request.Query.Keys)
-                {
-                    if (key != "handler" && key != "__RequestVerificationToken")
-                    {
-                        Console.WriteLine("Key: " + key + " Value: " + Request.Query[key]);
-                        jsonPayload[key] += Request.Query[key];
-                    }
-                }
-                bool hasTableName = jsonPayload.ContainsKey("TableName") && !string.IsNullOrEmpty(jsonPayload["TableName"]?.ToString());
-                if (!hasTableName)
-                {
-                    jsonPayload["TableName"] = TableName;
-                }
-                try
-                {
-                    dataList = TableDataService.SortAndFilterTable(context, jsonPayload);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Exception: " + ex.ToString());
-                }
-                return Page();
             }
-            else
+            var jsonPayload = new JsonObject();
+            foreach (var key in Request.Query.Keys)
             {
-                return Redirect("/AccessDenied");
+                if (key != "handler" && key != "__RequestVerificationToken")
+                {
+                    Console.WriteLine("Key: " + key + " Value: " + Request.Query[key]);
+                    jsonPayload[key] += Request.Query[key];
+                }
             }
+            bool hasTableName = jsonPayload.ContainsKey("TableName") && !string.IsNullOrEmpty(jsonPayload["TableName"]?.ToString());
+            if (!hasTableName)
+            {
+                jsonPayload["TableName"] = TableName;
+            }
+            try
+            {
+                dataList = TableDataService.SortAndFilterTable(context, jsonPayload);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception: " + ex.ToString());
+            }
+            return Page();
+            
         }
 
-        public IActionResult OnGetTableData()
+        public IActionResult OnGetTableData(string TableName = "Accounts")
         {
 
-            var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireReaderAccounts").Result;
-
-            if (authorizationResult.Succeeded)
+            var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireReader" + TableName).Result;
+            if (!authorizationResult.Succeeded)
             {
+                return RedirectToPage("/AccessDenied");
+
+            }
                 var jsonPayload = new JsonObject();
                 foreach (var key in Request.Query.Keys)
                 {
@@ -102,25 +99,22 @@ namespace Model.BO.Pages.UserData
                     ViewData = viewData
 
                 };
-            }
-            else
-            {
-                return Redirect("/AccessDenied");
-            }
         }
 
     
 
         
 
-        public IActionResult OnPost(List<string> selectedFiles, string ActionName)
+        public IActionResult OnPost(List<string> selectedFiles, string ActionName, string TableName = "Accounts")
         {
 
-            var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireEditorAccounts").Result;
-
-            if (authorizationResult.Succeeded)
+            var authorizationResult = authorizationService.AuthorizeAsync(User, "RequireEditor" + TableName).Result;
+            if (!authorizationResult.Succeeded)
             {
-                try
+                return RedirectToPage("/AccessDenied");
+
+            }
+            try
                 {
                     Console.WriteLine("Action: " + ActionName);
 
@@ -147,12 +141,6 @@ namespace Model.BO.Pages.UserData
                 }
 
                 return RedirectToPage("/TablePages/TableDashboard", new { success = successMessage, error = errorMessage });
-
-            }
-            else
-            {
-                return RedirectToPage("/AccessDenied");
-            }
 
         }
 
