@@ -12,7 +12,7 @@ namespace Model.BO.Service
         static public List<dynamic> SortAndFilterTable(ModelDbContext context, JsonObject payload)
         {   
             string entityName = payload["TableName"]?.ToString()?.TrimEnd('s', 'S') ?? "Accounts";
-            int rowCount = string.IsNullOrEmpty(payload["RowCount"]?.ToString()) ? 30: int.Parse(payload["RowCount"]?.ToString());
+            int rowCount = string.IsNullOrEmpty(payload["RowCount"]?.ToString()) ? 100: int.Parse(payload["RowCount"]?.ToString());
             var entityType = (context.Model.GetEntityTypes()
                     .FirstOrDefault(e => e.ClrType.Name.Equals(entityName, StringComparison.OrdinalIgnoreCase))?.ClrType) ?? throw new InvalidOperationException($"L'entité '{entityName}' est introuvable dans le DbContext.");
 
@@ -24,11 +24,11 @@ namespace Model.BO.Service
             if (!string.IsNullOrWhiteSpace(payload["Order"]?.ToString()) && entityType.GetProperty(payload["SortBy"]?.ToString()) != null)
             {
                 query = AddFiltersToQuery(query, entityType, payload);
-                return [.. query.Take(30)];
+                return [.. query.Take(rowCount)];
             }
             else
             {
-                return [.. query.Take(30)];
+                return [.. query.Take(rowCount)];
             }
 
         }
