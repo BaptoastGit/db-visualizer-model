@@ -79,7 +79,8 @@
                 
                 else if (pageConfig["EditableColumns"] != null && pageConfig["EditableColumns"].ToString().Contains(jsonValues["DBColumn"].ToString()))
                 {
-                    <td title="@property?.GetValue(item, null)" class="cellule-reduite donnees donneesCampagne position-relative m-lg-5 @jsonValues["DBColumn"] @(visibleOnMobile ? "" :  "d-none d-lg-table-cell" )"><span>@property?.GetValue(item, null)</span>
+                    <td title="@property?.GetValue(item, null)" column="@jsonValues["DBColumn"]" class="cellule-reduite donnees donneesCampagne position-relative m-lg-5 @jsonValues["DBColumn"] @(visibleOnMobile ? "" : "d-none d-lg-table-cell")">
+                        <span>@property?.GetValue(item, null)</span>
                         @if (propertyType == typeof(DateTime?) || propertyType == typeof(DateTime))
                         {
                             <i class="bi-pencil edit-pencil ms-2 invisible">

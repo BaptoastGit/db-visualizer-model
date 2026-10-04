@@ -42,7 +42,6 @@ namespace Model.BO.Service
 
                     var property = entityType.GetProperty(kvp.Key);
                     var propertyType = property?.PropertyType;
-                    Console.WriteLine("key: " + kvp.Key + " value: " + kvp.Value?.ToString() + "property: ");
                     if (!string.IsNullOrEmpty(kvp.Value.ToString()))
                     {
                         if (propertyType == typeof(DateTime?) || propertyType == typeof(DateTime))

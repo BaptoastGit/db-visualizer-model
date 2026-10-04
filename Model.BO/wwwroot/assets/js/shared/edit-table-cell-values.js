@@ -1,4 +1,5 @@
 ﻿function makeColumnEditable(columnsName) {
+    addSaveButton();
     window.editableRights = true;
     window.editableColumns = columnsName;
     document.querySelectorAll(".edit-pencil").forEach(pencil => {
@@ -105,7 +106,7 @@ function deletableRows() {
                 event.target.closest("tr").style.backgroundColor = "#f8d7da";
                 document.getElementById("cancelButton").classList.remove("d-none");
                 document.getElementById("saveButton").classList.remove("d-none");
-                document.getElementById("Deleteform").innerHTML += `<input name="${rowId}" value="true"> `;
+                document.getElementById("Deleteform").innerHTML += `<input type="hidden" name="${rowId}" value="true"> `;
             }
 
         });
@@ -133,11 +134,26 @@ function deletableRows() {
 function addEditToForm() {
     document.getElementById("cancelButton").classList.remove("d-none");
     document.getElementById("saveButton").classList.remove("d-none");
-    form = event.target.parentElement.classList.contains("InternalNotes") ? document.getElementById("InternalNotesForm") : document.getElementById("PhoneNumberForm");
-    name = event.target.parentElement.classList.contains("InternalNotes") ? event.target.parentElement.previousElementSibling.title : event.target.parentElement.title
-    if (form.querySelector(`input[name="${name}"]`)) {
-        form.querySelector(`input[name="${name}"]`).value = event.target.value;
+    let rowId = event.target.parentElement.parentElement.firstElementChild.innerText == "" ? event.target.parentElement.parentElement.children[1].innerText : event.target.parentElement.parentElement.firstElementChild.innerText;
+    form = document.getElementById(event.target.parentElement.getAttribute("column") + "Form");
+    if (form.querySelector(`input[name="${rowId}"]`)) {
+        form.querySelector(`input[name="${rowId}"]`).value = event.target.value;
     } else {
-        form.innerHTML += `<input name="${name}" value="${event.target.value}">`;
+        form.innerHTML += `<input name="${rowId}" value="${event.target.value}">`;
+    }
+}
+
+
+function addEditDateToForm() {
+    let date = new Date(event.target.value);
+    event.target.parentElement.parentElement.querySelector("span").innerText = date.toLocaleString('fr-FR');
+    document.getElementById("cancelButton").classList.remove("d-none");
+    document.getElementById("saveButton").classList.remove("d-none");
+    console.log(event.target.parentElement.parentElement.getAttribute("column"));
+    form = document.getElementById(event.target.parentElement.parentElement.getAttribute("column") + "Form");
+    if (form.querySelector(`input[name="${event.target.parentElement.parentElement.parentElement.firstElementChild.innerHTML}"]`)) {
+        form.querySelector(`input[name="${event.target.parentElement.parentElement.parentElement.firstElementChild.innerHTML}"]`).value = event.target.value;
+    } else {
+       form.innerHTML += `<input type="hidden" name="${event.target.parentElement.parentElement.parentElement.firstElementChild.innerHTML}" value="${event.target.value}">`;
     }
 }

@@ -1,6 +1,7 @@
 ﻿@page
 @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
 @model Model.BO.Pages.TablePages.TableDashBoardModel
+@using System.Text.Json.Nodes
 @using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService AuthorizationService
 @{
@@ -64,6 +65,23 @@
             </div>
             <form method="post" id="form">
             </form>
+            @{
+                JsonNode pageConfig = JsonNode.Parse(System.IO.File.ReadAllText("wwwroot/data/pagesLayout.json"))[ViewData["title"].ToString()];
+            }
+            @if (pageConfig?["EditableColumns"] is JsonArray editableColumns && (await AuthorizationService.AuthorizeAsync(User, "RequireEditor" + ViewData["title"].ToString())).Succeeded)
+            {
+
+                <script>
+                                makeColumnEditable(@Json.Serialize(editableColumns));
+                </script>
+                @foreach (string column in editableColumns)
+                {
+                    <form method="post" class="edit-forms" id="@(column)Form">
+                        <input type="hidden" name="FormType" value="@(column)" />
+                        <input type="hidden" name="TableName" value="@(ViewData["Title"])" />
+                    </form>
+                }
+            }
             <form method="post" class="edit-forms" id="Deleteform">
                 <input type="hidden" name="FormType" value="Delete" />
                 <input type="hidden" name="TableName" value="@(ViewData["Title"])" />

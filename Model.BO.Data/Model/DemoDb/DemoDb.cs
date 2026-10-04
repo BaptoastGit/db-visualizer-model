@@ -139,7 +139,7 @@ namespace Model.BO.Data.Model.DemoDb
                     int retry = rand.Next(0, 5);
                     messages.Add(new Message
                     {
-                        CorrelationId = Guid.NewGuid().ToString(),
+                        CorrelationId = Guid.NewGuid(),
                         RetryCount = retry,
                         ErrorMessage = retry > 0 ? errors[rand.Next(errors.Length)] : null,
                         PayloadSize = rand.Next(128, 8192),

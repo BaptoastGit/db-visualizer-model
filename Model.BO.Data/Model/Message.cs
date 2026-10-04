@@ -11,6 +11,6 @@ namespace Model.BO.Data.Model
         public long? PayloadSize { get; set; }
         public string? Priority { get; set; }
         public DateTime? ProcessedOn { get; set; }
-        public string? CorrelationId { get; set; }
+        public Guid? CorrelationId { get; set; }
     }
 }
