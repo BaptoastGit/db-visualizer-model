@@ -125,7 +125,6 @@ namespace Model.BO.Pages.TablePages
                     {
                         if (key != "TableName" && key != "FormType" && key != "__RequestVerificationToken")
                         {
-                            Console.WriteLine("Key: " + key + " Value: " + Request.Form[key]);
                             object? entity;
                             if (Guid.TryParse(key, out Guid guidKey))
                             {
@@ -155,8 +154,6 @@ namespace Model.BO.Pages.TablePages
                 if (propertyType == typeof(DateTime?) || propertyType == typeof(DateTime))
                 {
 
-                    Console.WriteLine("date:" + FormType);
-
                     foreach (var key in Request.Form.Keys)
                     {
 
@@ -165,7 +162,6 @@ namespace Model.BO.Pages.TablePages
                             object? entity;
                             if (Guid.TryParse(key, out Guid guidKey))
                             {
-                                Console.WriteLine("ici");
                                 entity = context.Find(entityType, guidKey);
 
                             }
@@ -174,10 +170,8 @@ namespace Model.BO.Pages.TablePages
                                 entity = context.Find(entityType, key);
                             }
 
-                            Console.WriteLine("Key: " + key + " Value: " + Request.Form[key]);
                             if (entity != null)
                             {
-                                Console.WriteLine("la");
                                 var targetProperty = entityType.GetProperty(FormType);
                                 Console.WriteLine("Updating "+ targetProperty + " entity with key: " + key);
                                 targetProperty.SetValue(entity, DateTime.Parse(Request.Form[key]));
@@ -188,8 +182,6 @@ namespace Model.BO.Pages.TablePages
                 }
                 else
                 {
-                    Console.WriteLine("string:" + FormType);
-
                     foreach (var key in Request.Form.Keys)
                     {
 
@@ -205,7 +197,6 @@ namespace Model.BO.Pages.TablePages
                             {
                                 entity = context.Find(entityType, key);
                             }
-                            Console.WriteLine("Key: " + key + " Value: " + Request.Form[key]);
                             if (entity != null)
                             {
                                 var targetProperty = entityType.GetProperty(FormType);

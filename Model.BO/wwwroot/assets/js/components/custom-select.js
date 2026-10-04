@@ -1,52 +1,64 @@
 ﻿function checkBoxClickHandler(column, value) {
     const checkbox = document.getElementById(`checkbox-item-${value}`);
     const checkboxValueInput = document.getElementById(`checkbox-value-${value}`);
-    const allCheckboxes = Array.from(document.querySelectorAll('.checkboxitem'));
+    if (!checkbox || !checkboxValueInput) return;
 
+    const isChecked = checkbox.classList.toggle('feather-check');
+    checkboxValueInput.value = isChecked ? value : "";
 
-    checkbox.classList.toggle('feather-check');
-    if (checkbox.classList.contains('feather-check')) {
-        checkboxValueInput.value = value;
-    }
-    else {
-        checkboxValueInput.value = "";
-    }
-    if (allCheckboxes.every(checkbox => checkbox.classList.contains('feather-check'))) {
-        document.getElementById(`checkbox-item-all-${column}`).classList.add('feather-check');
-    }
-    else {
-        document.getElementById(`checkbox-item-all-${column}`).classList.remove('feather-check');
+    const columnCheckboxes = Array.from(document.querySelectorAll(`.checkboxitem.${column}`));
+    const allChecked = columnCheckboxes.every(cb => cb.classList.contains('feather-check'));
 
+    const selectAllCheckbox = document.getElementById(`checkbox-item-all-${column}`);
+    if (selectAllCheckbox) {
+        if (allChecked) {
+            selectAllCheckbox.classList.add('feather-check');
+        } else {
+            selectAllCheckbox.classList.remove('feather-check');
+        }
     }
-    document.getElementById("ResetFiltersButton").style.display = "flex";
+
+    const resetBtn = document.getElementById("ResetFiltersButton");
+    if (resetBtn) resetBtn.style.display = "flex";
 }
 
 
-function selectAllOptions(column){
-    document.querySelectorAll(`.checkboxitem.${column}`).forEach(function (checkbox) {
-        if (document.getElementById(`checkbox-item-all-${column}`).classList.contains('feather-check')) {
-            checkbox.classList.remove('feather-check');
-            document.getElementById('checkbox-value-' + checkbox.id.split('-').pop()).value = "";
+function selectAllOptions(column) {
+    const selectAllCheckbox = document.getElementById(`checkbox-item-all-${column}`);
+    if (!selectAllCheckbox) return;
 
-        }
+    const isCurrentlyChecked = selectAllCheckbox.classList.contains('feather-check');
+    const targetState = !isCurrentlyChecked; 
 
-        else {
+    document.querySelectorAll(`.checkboxitem.${column}`).forEach(checkbox => {
+        const optionId = checkbox.id.split('-').pop();
+        const valueInput = document.getElementById(`checkbox-value-${optionId}`);
+
+        if (targetState) {
             checkbox.classList.add('feather-check');
-            document.getElementById('checkbox-value-' + checkbox.id.split('-').pop()).value = checkbox.id.split('-').pop();
+            if (valueInput) valueInput.value = optionId;
+        } else {
+            checkbox.classList.remove('feather-check');
+            if (valueInput) valueInput.value = "";
         }
     });
-    document.getElementById(`checkbox-item-all-${column}`).classList.toggle('feather-check');
 
+    selectAllCheckbox.classList.toggle('feather-check');
 
+    const resetBtn = document.getElementById("ResetFiltersButton");
+    if (resetBtn) resetBtn.style.display = "flex";
 }
+
 
 function closeSelectMenu(event) {
-    if (Array.from(document.querySelectorAll('.collapse')).every(collapse => !collapse.contains(event.target))) {
-        var collapseElementList = [].slice.call(document.querySelectorAll('.collapse.show:not(#collapseActions, .collapseNavBar)'))
-        var collapseList = collapseElementList.map(function (collapseEl) {
-            return new bootstrap.Collapse(collapseEl)
-        })
+    const clickedInsideCollapse = event.target.closest('.collapse');
+
+    if (!clickedInsideCollapse) {
+        const openMenus = document.querySelectorAll('.collapse.show:not(#collapseActions):not(.collapseNavBar)');
+
+        openMenus.forEach(menu => {
+            const bsCollapse = bootstrap.Collapse.getInstance(menu) || new bootstrap.Collapse(menu, { toggle: false });
+            bsCollapse.hide();
+        });
     }
 }
-
-

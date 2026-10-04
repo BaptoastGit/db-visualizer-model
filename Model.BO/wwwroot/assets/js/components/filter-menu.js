@@ -23,81 +23,119 @@ function ResetFilters() {
 
 }
 
+const IGNORED_PARAMS = new Set(["SortBy", "Order", "Success", "success"]);
+
 function loadFilters(urlParams) {
     const urlParamsGrouped = Object.fromEntries(
         [...new Set(urlParams.keys())].map(key => [key, urlParams.getAll(key)])
     );
-    for (const key in urlParamsGrouped) {
-        if (key != "SortBy" && key != "Order" && key != "Success" && key != "success") {
-            const date = new Date(urlParamsGrouped[key][0]);
-            if (urlParamsGrouped[key].length == 1) {
-                if (urlParamsGrouped[key][0] != "") {
-                    if (document.getElementById("filter-icon-" + key)) document.getElementById("filter-icon-" + key).classList.add("text-danger");
-                    if (document.getElementById("input-" + key)) document.getElementById("input-" + key).value = urlParamsGrouped[key][0];
-                    else {
-                        document.querySelectorAll(`.checkboxitem.${key}`).forEach(checkbox => {
-                            if (urlParamsGrouped[key].includes(checkbox.id.replace("checkbox-item-", ""))) {
-                                checkbox.classList.add('feather-check');
-                                document.getElementById('checkbox-value-' + checkbox.getAttribute("optionId")).value = checkbox.getAttribute("optionId");
 
-                            }
-                        })
-                    }
-                    document.getElementById('ResetFiltersButton').style.display = "flex";
-
-                }
-
-            }
-            else if (urlParamsGrouped[key][0] == "eq" || urlParamsGrouped[key][0] == "lt" || urlParamsGrouped[key][0] == "gt") {
-                if ((urlParamsGrouped[key][0] != "gt" || urlParamsGrouped[key][1] != "0")) {
-                    showResetButton(key);
-                    document.getElementById("input-operator-" + key).value = urlParamsGrouped[key][0];
-                    document.getElementById("input-" + key).value = urlParamsGrouped[key][1];
-                }
-
-            }
-            else if (isNaN(Number(urlParamsGrouped[key][0])) && !isNaN(date.getTime())) {
-
-                document.getElementById("input-start-" + key).value = urlParamsGrouped[key][0];
-                document.getElementById("input-end-" + key).value = urlParamsGrouped[key][1];
-
-                if (document.getElementById("input-start-" + key).value != "2000-01-01T00:00" || (document.getElementById("input-end-" + key).value != "9999-12-31T00:00")) {
-                    showResetButton(key);
-                }
-            }
-            else {
-                document.querySelectorAll(`.checkboxitem.${key}`).forEach(checkbox => {
-                    if (urlParamsGrouped[key].includes(checkbox.id.replace("checkbox-item-", ""))) {
-                        checkbox.classList.add('feather-check');
-                        document.getElementById('checkbox-value-' + checkbox.getAttribute("optionId")).value = checkbox.getAttribute("optionId");
-
-                    }
-                })
-                if (Array.from(document.querySelectorAll(`.checkboxitem.${key}`)).every(checkbox => checkbox.classList.contains('feather-check'))) {
-                    document.getElementById(`checkbox-item-all-${key}`).classList.add('feather-check');
-                }
-                else {
-                    showResetButton(key)
-
-                }
-
-            }
-
+    for (const [key, values] of Object.entries(urlParamsGrouped)) {
+        if (IGNORED_PARAMS.has(key) || !values || values.length === 0 || values[0] === "") {
+            continue;
         }
 
+        applyFilterLogic(key, values);
     }
 }
 
+function applyFilterLogic(key, values) {
+    const val0 = values[0];
+
+    if (["eq", "lt", "gt"].includes(val0)) {
+        handleOperatorFilter(key, values);
+        return;
+    }
+
+    if (isDateString(val0)) {
+        handleDateFilter(key, values);
+        return;
+    }
+
+    const textInput = document.getElementById(`input-${key}`);
+    if (values.length === 1 && textInput) {
+        handleStandardInput(key, val0, textInput);
+        return;
+    }
+
+    handleCheckboxFilter(key, values);
+}
+
+function isDateString(value) {
+    return isNaN(Number(value)) && !isNaN(new Date(value).getTime());
+}
+
+function handleOperatorFilter(key, values) {
+    const operator = values[0];
+    const numberValue = values[1];
+
+    if (operator === "gt" && numberValue === "0") return;
+
+    const opInput = document.getElementById(`input-operator-${key}`);
+    const valInput = document.getElementById(`input-${key}`);
+
+    if (opInput) opInput.value = operator;
+    if (valInput) valInput.value = numberValue;
+
+    showResetButton(key);
+}
+
+function handleDateFilter(key, values) {
+    const startInput = document.getElementById(`input-start-${key}`);
+    const endInput = document.getElementById(`input-end-${key}`);
+
+    if (startInput) startInput.value = values[0];
+    if (endInput) endInput.value = values[1];
+
+    const startVal = startInput ? startInput.value : "";
+    const endVal = endInput ? endInput.value : "";
+
+    if (startVal !== "2000-01-01T00:00" || endVal !== "9999-12-31T00:00") {
+        showResetButton(key);
+    }
+}
+
+function handleStandardInput(key, value, textInput) {
+    textInput.value = value;
+    showResetButton(key);
+}
+
+function handleCheckboxFilter(key, values) {
+    const checkboxes = document.querySelectorAll(`.checkboxitem.${key}`);
+    if (checkboxes.length === 0) return;
+
+    let allChecked = true;
+
+    checkboxes.forEach(checkbox => {
+        const optionId = checkbox.id.replace("checkbox-item-", "");
+
+        if (values.includes(optionId)) {
+            checkbox.classList.add("feather-check");
+
+            const hiddenInput = document.getElementById(`checkbox-value-${checkbox.getAttribute("optionId")}`);
+            if (hiddenInput) {
+                hiddenInput.value = checkbox.getAttribute("optionId");
+            }
+        } else {
+            allChecked = false;
+        }
+    });
+
+    const allCheckbox = document.getElementById(`checkbox-item-all-${key}`);
+
+    if (allChecked && allCheckbox) {
+        allCheckbox.classList.add("feather-check");
+    } else {
+        showResetButton(key);
+    }
+}
 
 function showResetButton(key) {
     document.getElementById("filter-icon-" + key).classList.add("text-danger");
     document.getElementById('ResetFiltersButton').style.display = "flex";
 }
 
-
-
-
-function initializeInputValues(resetButton, mainCheckbox = "") {
+function initializeInputValues() {
     let currentDateTime = new Date();
     document.querySelectorAll('.date-start').forEach(el => el.value = "2000-01-01T00:00");
     document.querySelectorAll('.date-end').forEach(el => el.value = "9999-12-31T00:00");
@@ -120,53 +158,44 @@ function initializeInputValues(resetButton, mainCheckbox = "") {
     document.querySelectorAll('.checkboxitem-all ').forEach(function (checkbox) {
         checkbox.classList.add('feather-check');
     });
-
-
 }
 
 
 function reloadPageWithSavedFilters() {
-    const formData = JSON.parse(sessionStorage.getItem("SortFormData" + document.body.dataset.pageTitle));
-    tempForm = document.createElement("form");
-    tempForm.id = "tempForm";
-    tempForm.innerHTML += `
-     <input type="hidden" name="SortBy" value='${document.getElementById("SortBy").value}'/>
-      <input type="hidden" name="Order" value='${document.getElementById("Order").value}'/>
-    `
+    const formDataJson = sessionStorage.getItem("SortFormData" + document.body.dataset.pageTitle);
+    if (!formDataJson) return;
+
+    const formData = JSON.parse(formDataJson);
+    const userParams = new URLSearchParams();
+
+    userParams.append("SortBy", document.getElementById("SortBy")?.value || "");
+    userParams.append("Order", document.getElementById("Order")?.value || "");
+
+    const currentUrlParams = new URLSearchParams(window.location.search);
+    if (currentUrlParams.has("success")) {
+        userParams.append("success", currentUrlParams.get("success"));
+    }
+
     for (const [key, value] of Object.entries(formData)) {
         try {
-            const values = JSON.parse(value);
-            for (const [subkey, value] of Object.entries(values)) {
-                tempForm.innerHTML += `
-                <input type="hidden" name='${key}' value='${value}'/>
-                `
+            const valuesArray = JSON.parse(value);
+            if (Array.isArray(valuesArray)) {
+                valuesArray.forEach(val => userParams.append(key, val));
+                userParams.append(key, '');
+                userParams.append(key, '');
+            } else {
+                userParams.append(key, value);
             }
-            tempForm.innerHTML += `
-                <input type="hidden" name='${key}' value=''/>
-                <input type="hidden" name='${key}' value=''/>
-                `
         } catch {
-            tempForm.innerHTML += `<input type="hidden" name='${key}' value='${value}'/>`
+            userParams.append(key, value);
         }
-
-
     }
-    let urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("success")) {
-        tempForm.innerHTML += `<input type="hidden" name="success" value='${urlParams.get("success")}'/>`
 
-    }
-    document.body.appendChild(tempForm);
-    form = new FormData(tempForm);
-    const userParams = new URLSearchParams(form);
     const newUrl = `${window.location.pathname}?${userParams.toString()}`;
     window.history.pushState({}, "", newUrl);
 
-    urlParams = new URLSearchParams(window.location.search);
-    loadFilters(urlParams);
-
+    loadFilters(new URLSearchParams(window.location.search));
     ReloadTableOnly();
-    tempForm.remove();
 }
 
 
@@ -183,48 +212,34 @@ function displayResetButtonAfterUserChanges() {
 function saveFilterOptions() {
     document.getElementById("SortForm").addEventListener("submit", function (event) {
         event.preventDefault();
+
+        const form = document.getElementById("SortForm");
+        const formData = new FormData(form);
         const inputsData = {};
 
-        multiplesInputsFilters = document.querySelectorAll(".multiple-inputs");
-        Array.from(multiplesInputsFilters).forEach(multipleInput => {
-            options = Array.from(document.querySelectorAll("[name='" + multipleInput.id.replace("checkbox-all-", "") + "'].feather-check")).map(el => el.getAttribute("optionId"));
-            inputsData[multipleInput.id.replace("checkbox-all-", "")] = JSON.stringify(options);
-        })
+        for (const [key, value] of formData.entries()) {
+            if (inputsData[key]) {
+                if (!Array.isArray(inputsData[key])) {
+                    inputsData[key] = [inputsData[key]];
+                }
+                inputsData[key].push(value);
+            } else {
+                inputsData[key] = value;
+            }
+        }
 
-        dateTimeInputsFilters = document.querySelectorAll(".userInput.date-start:not(.globalFilter)");
-        Array.from(dateTimeInputsFilters).forEach(dateInput => {
-            options = Array.from(document.querySelectorAll("[name='" + dateInput.id.replace("input-start-", "") + "']")).map(el => el.value);
-            inputsData[dateInput.id.replace("input-start-", "")] = JSON.stringify(options);
-        })
-
-        numberInputsFilters = document.querySelectorAll(".userInput.operator:not(.globalFilter)");
-        Array.from(numberInputsFilters).forEach(numberInput => {
-
-            options = Array.from(document.querySelectorAll("[name='" + numberInput.getAttribute("name") + "']")).map(el => el.value);
-            inputsData[numberInput.getAttribute("name")] = JSON.stringify(options);
-        })
-
-        const inputs = document.querySelectorAll(`.userInput:not(.date-start):not(.date-end):not(.globalFilter):not(.operator, .number)`);
-        inputs.forEach((input) => {
-            inputsData[input.id.replace("input-", "").replace("operator-", "")] = input.value;
-        })
-
-        const globalInputs = document.querySelectorAll(`.globalFilter`);
-        globalInputs.forEach((input) => {
-            inputsData[input.id] = input.value;
-        })
-
-        sessionStorage.setItem("Reloaded", "true");
+        for (const key in inputsData) {
+            if (Array.isArray(inputsData[key])) {
+                inputsData[key] = JSON.stringify(inputsData[key]);
+            }
+        }
         sessionStorage.setItem("SortFormData" + document.body.dataset.pageTitle, JSON.stringify(inputsData));
 
-        const form = new FormData(document.getElementById("SortForm"));
-        const userParams = new URLSearchParams(form);
+        const userParams = new URLSearchParams(formData);
         const newUrl = `${window.location.pathname}?${userParams.toString()}`;
         window.history.pushState({}, "", newUrl);
 
-        const urlParams = new URLSearchParams(window.location.search);
-        loadFilters(urlParams);
-
+        loadFilters(new URLSearchParams(window.location.search));
         ReloadTableOnly();
     });
 }
