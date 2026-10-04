@@ -132,7 +132,7 @@
       }
     },
     "VisibleColumnsOnMobile": [ "ErrorMessage", "Priority", "PayloadSize" ],
-    "EditableColumns": [ "ProcessedOn", "Priority" ],
+    "EditableColumns": [ "RetryCount", "ProcessedOn", "Priority" ],
     "Default message": "No message found."
   },
   "Orders": {

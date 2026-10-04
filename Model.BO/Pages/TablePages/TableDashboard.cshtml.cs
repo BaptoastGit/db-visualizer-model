@@ -180,6 +180,35 @@ namespace Model.BO.Pages.TablePages
                         }
                     }
                 }
+                if (propertyType == typeof(int?) || propertyType == typeof(int))
+                {
+
+                    foreach (var key in Request.Form.Keys)
+                    {
+
+                        if (key != "TableName" && key != "FormType" && key != "__RequestVerificationToken")
+                        {
+                            object? entity;
+                            if (Guid.TryParse(key, out Guid guidKey))
+                            {
+                                entity = context.Find(entityType, guidKey);
+
+                            }
+                            else
+                            {
+                                entity = context.Find(entityType, key);
+                            }
+
+                            if (entity != null)
+                            {
+                                var targetProperty = entityType.GetProperty(FormType);
+                                Console.WriteLine("Updating " + targetProperty + " entity with key: " + key);
+                                targetProperty.SetValue(entity, int.Parse(Request.Form[key]));
+                            }
+
+                        }
+                    }
+                }
                 else
                 {
                     foreach (var key in Request.Form.Keys)
