@@ -85,6 +85,11 @@
 [data-bs-theme="light"] .sort-row:hover {
     background-color: #f4f4f9;
 }
+[data-bs-theme="dark"] .sort-row:hover,
+[data-bs-theme="dark"] .actionButton:hover 
+{
+    background-color: #4f4d4e;
+}
 [data-bs-theme="dark"] .checkbox-row:hover {
     background-color: #829ab1 !important;
     color: #dee2e6 !important;
@@ -95,8 +100,9 @@
 }
 
 
-[data-bs-theme="dark"] .table-rows.selected {
+[data-bs-theme="dark"] .table-rows.selected td {
     background-color: #829ab1 !important;
+    color: #dee2e6 !important;
 }
 
 .fade-overlay {

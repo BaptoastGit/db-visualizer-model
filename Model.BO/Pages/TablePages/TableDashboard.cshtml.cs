@@ -13,6 +13,8 @@ namespace Model.BO.Pages.TablePages
     public class TableDashBoardModel(ModelDbContext context, IAuthorizationService authorizationService, IConfiguration configuration) : PageModel
     {
         public List<dynamic> dataList = [];
+
+        public int totalCount = 0;
         public string successMessage;
         public string errorMessage;
         public Dictionary<string, string> successMessageList = new()
@@ -50,7 +52,7 @@ namespace Model.BO.Pages.TablePages
             }
             try
             {
-                dataList = TableDataService.SortAndFilterTable(context, jsonPayload);
+                (dataList, totalCount) = TableDataService.SortAndFilterTable(context, jsonPayload);
             }
             catch (Exception ex)
             {
@@ -79,7 +81,7 @@ namespace Model.BO.Pages.TablePages
                 }
                 try
                 {
-                    dataList = TableDataService.SortAndFilterTable(context, jsonPayload);
+                    (dataList, totalCount) = TableDataService.SortAndFilterTable(context, jsonPayload);
                 }
                 catch (Exception ex)
                 {

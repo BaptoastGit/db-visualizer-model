@@ -91,7 +91,7 @@
                         }
                         else
                         {
-                            <input class="form-control-sm d-none" value="@property?.GetValue(item, null)" style="width: 150px;" onchange="addEditToForm()" />
+                            <input class="form-control-sm d-none" value="@property?.GetValue(item, null)" style="width: 100px;" onchange="addEditToForm()" />
 
                             <i class="bi-pencil edit-pencil ms-2 invisible"></i>
                         }
@@ -176,3 +176,4 @@ else
 @{
     ViewContext.HttpContext.Items["rowCount"] = row;
 }
+<input type="hidden" id="totalCount" value="@Model.totalCount"/>

@@ -17,11 +17,11 @@
                         <span>Reinitialiser les filtres</span>
                     </button>
                     <div class="d-flex flex-column justify-content-center">
-                        <select id="RowCountButton" class="form-select-sm border-0" onchange="UpdateForm()" >
-                            <option value="100">100 lignes</option>
-                            <option value="500" selected>500 lignes</option>
-                            <option value="1000">1000 lignes</option>
-                            <option value="5000">5000 lignes</option>
+                        <select id="input-RowCount" class="form-select-sm border-0" onchange="UpdateForm()" >
+                            <option value="50">50 rows</option>
+                            <option value="100" selected>100 rows</option>
+                            <option value="500" >500 rows</option>
+                            <option value="1000">1000 rows</option>
                         </select>
                     </div>
                 </div>
@@ -106,6 +106,33 @@ customElements.define('sub-sub-page-header', SubSubPageHeader);
 
 
 function UpdateForm() {
-    document.getElementById("RowCountForm").value = document.getElementById("RowCountButton").value;
-    console.log(document.getElementById("RowCountForm").value);
+    document.getElementById("RowCountForm").value = document.getElementById("input-RowCount").value;
+    const form = document.getElementById("SortForm");
+    const formData = new FormData(form);
+    const inputsData = {};
+
+    for (const [key, value] of formData.entries()) {
+        if (inputsData[key]) {
+            if (!Array.isArray(inputsData[key])) {
+                inputsData[key] = [inputsData[key]];
+            }
+            inputsData[key].push(value);
+        } else {
+            inputsData[key] = value;
+        }
+    }
+
+    for (const key in inputsData) {
+        if (Array.isArray(inputsData[key])) {
+            inputsData[key] = JSON.stringify(inputsData[key]);
+        }
+    }
+    sessionStorage.setItem("SortFormData" + document.body.dataset.pageTitle, JSON.stringify(inputsData));
+
+    const userParams = new URLSearchParams(formData);
+    const newUrl = `${window.location.pathname}?${userParams.toString()}`;
+    window.history.pushState({}, "", newUrl);
+
+    loadFilters(new URLSearchParams(window.location.search));
+    ReloadTableOnly();
 }

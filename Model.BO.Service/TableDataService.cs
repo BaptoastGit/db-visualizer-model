@@ -9,10 +9,11 @@ namespace Model.BO.Service
 {
     static public class TableDataService
     {
-        static public List<dynamic> SortAndFilterTable(ModelDbContext context, JsonObject payload)
+        static public (List<dynamic>, int totalCount) SortAndFilterTable(ModelDbContext context, JsonObject payload)
         {   
             string entityName = payload["TableName"]?.ToString()?.TrimEnd('s', 'S') ?? "Accounts";
             int rowCount = string.IsNullOrEmpty(payload["RowCount"]?.ToString()) ? 100: int.Parse(payload["RowCount"]?.ToString());
+            Console.WriteLine(rowCount);
             var entityType = (context.Model.GetEntityTypes()
                     .FirstOrDefault(e => e.ClrType.Name.Equals(entityName, StringComparison.OrdinalIgnoreCase))?.ClrType) ?? throw new InvalidOperationException($"L'entité '{entityName}' est introuvable dans le DbContext.");
 
@@ -24,11 +25,13 @@ namespace Model.BO.Service
             if (!string.IsNullOrWhiteSpace(payload["Order"]?.ToString()) && entityType.GetProperty(payload["SortBy"]?.ToString()) != null)
             {
                 query = AddFiltersToQuery(query, entityType, payload);
-                return [.. query.Take(rowCount)];
+                int totalCount = query.Count();
+                return ([.. query.Take(rowCount)], totalCount);
             }
             else
             {
-                return [.. query.Take(rowCount)];
+                int totalCount = query.Count();
+                return ([.. query.Take(rowCount)], totalCount);
             }
 
         }
@@ -83,7 +86,7 @@ namespace Model.BO.Service
                         }
                         else if (kvp.Value.ToString().Contains(','))
                         {
-                            query = query.Where($"{kvp.Key} != null && @0.Contains({kvp.Key})", kvp.Value.ToString());
+                            query = query.Where($"{kvp.Key} == null || @0.Contains({kvp.Key})", kvp.Value.ToString());
                         }
                         else if (propertyType == typeof(string))
                         {

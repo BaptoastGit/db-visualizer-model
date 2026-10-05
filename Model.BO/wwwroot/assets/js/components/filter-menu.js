@@ -58,6 +58,7 @@ function applyFilterLogic(key, values) {
         return;
     }
 
+
     handleCheckboxFilter(key, values);
 }
 
@@ -131,7 +132,7 @@ function handleCheckboxFilter(key, values) {
 }
 
 function showResetButton(key) {
-    document.getElementById("filter-icon-" + key).classList.add("text-danger");
+    if (document.getElementById("filter-icon-" + key)) document.getElementById("filter-icon-" + key).classList.add("text-danger");
     document.getElementById('ResetFiltersButton').style.display = "flex";
 }
 
@@ -242,4 +243,38 @@ function saveFilterOptions() {
         loadFilters(new URLSearchParams(window.location.search));
         ReloadTableOnly();
     });
+    document.getElementById("input-RowCount").addEventListener("change", function (event) {
+        event.preventDefault();
+
+        const form = document.getElementById("SortForm");
+        const formData = new FormData(form);
+        const inputsData = {};
+
+        for (const [key, value] of formData.entries()) {
+            if (inputsData[key]) {
+                if (!Array.isArray(inputsData[key])) {
+                    inputsData[key] = [inputsData[key]];
+                }
+                inputsData[key].push(value);
+            } else {
+                inputsData[key] = value;
+            }
+        }
+
+        for (const key in inputsData) {
+            if (Array.isArray(inputsData[key])) {
+                inputsData[key] = JSON.stringify(inputsData[key]);
+            }
+        }
+        sessionStorage.setItem("SortFormData" + document.body.dataset.pageTitle, JSON.stringify(inputsData));
+
+        const userParams = new URLSearchParams(formData);
+        const newUrl = `${window.location.pathname}?${userParams.toString()}`;
+        window.history.pushState({}, "", newUrl);
+
+        loadFilters(new URLSearchParams(window.location.search));
+        ReloadTableOnly();
+    });
 }
+
+

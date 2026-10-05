@@ -55,7 +55,8 @@ function replaceStatusNumbers(data, jsonData, dataType) {
 
 function updateRowCounter() {
     var rowCount = document.getElementById("campagneList").rows.length - 1;
-    document.getElementById("rowCounter").innerHTML = `Affichage de ${rowCount} résultat`;
+    var totalCount = document.getElementById("totalCount").value;
+    document.getElementById("rowCounter").innerHTML = `Showing ${rowCount} of ${totalCount} result`;
     if (rowCount > 1) {
         document.getElementById("rowCounter").innerHTML += "s";
     }

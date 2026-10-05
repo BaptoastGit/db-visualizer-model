@@ -2,6 +2,16 @@
     background-color: #f4f4f9 !important;
 }
 
+[data-bs-theme="light"] .table-custom tbody tr.deleted td {
+    background-color: #f8d7da !important;
+}
+
+[data-bs-theme="dark"] .table-custom tbody tr.deleted td {
+    background-color: #a64449 !important;
+    opacity: 0.7;
+}
+
+
 [data-bs-theme="light"] .card{
     background-color: rgba(255, 255, 255, 0.75);
 }
@@ -93,7 +103,7 @@
     }
 
 
-[data-bs-theme="dark"] .table-custom tbody tr:hover td {
+[data-bs-theme="dark"] .table-custom tbody tr:hover:not(.deleted) td {
     background-color: #626671 !important;
     color: #dee2e6 !important;
 }

@@ -103,7 +103,6 @@ function deletableRows() {
                 document.getElementById("Deleteform").querySelector(`input[name="${rowId}"]`).remove();
             } else {
                 event.target.closest("tr").classList.add("deleted");
-                event.target.closest("tr").style.backgroundColor = "#f8d7da";
                 document.getElementById("cancelButton").classList.remove("d-none");
                 document.getElementById("saveButton").classList.remove("d-none");
                 document.getElementById("Deleteform").innerHTML += `<input type="hidden" name="${rowId}" value="true"> `;
